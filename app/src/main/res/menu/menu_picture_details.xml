@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.quadelapp.PictureDetailsActivity">
+    <item
+        android:id="@+id/action_favourites"
+        android:orderInCategory="100"
+        android:icon="@drawable/icon_add_to_favourites30"
+        android:title="@string/action_favourites"
+        app:showAsAction="always"/>
+</menu>
