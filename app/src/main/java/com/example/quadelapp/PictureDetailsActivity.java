@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import com.example.quadelapp.Models.Picture;
 import com.example.quadelapp.services.RedisService;
+import com.github.mikephil.charting.charts.LineChart;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -53,7 +54,8 @@ public class PictureDetailsActivity extends AppCompatActivity {
 
     private Map<String, Picture> pictures;
 
-    private ImageView ivChart, ivCover;
+    private ImageView ivCover;
+    private LineChart ivChart;
     private TextView tvDesc, tvDescChart;
     private Toolbar toolbar;
     private CollapsingToolbarLayout toolBarLayout;
@@ -301,7 +303,7 @@ public class PictureDetailsActivity extends AppCompatActivity {
         ivCover.setImageResource(picture.getImage());
         tvDesc.setText(picture.getDescription());
         tvDescChart.setText("Description of chart");
-        ivChart.setImageResource(picture.getImage());
+        //ivChart.setImageResource(picture.getImage());
 
     }
 

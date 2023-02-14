@@ -2,9 +2,9 @@ package com.example.quadelapp.Models;
 
 public class TimeSeriesData {
     private long timestamp;
-    private float value;
+    private String value;
 
-    public TimeSeriesData(long timestamp, float value) {
+    public TimeSeriesData(long timestamp, String value) {
         this.timestamp = timestamp;
         this.value = value;
     }
@@ -13,7 +13,7 @@ public class TimeSeriesData {
         return timestamp;
     }
 
-    public float getValue() {
+    public String getValue() {
         return value;
     }
 }

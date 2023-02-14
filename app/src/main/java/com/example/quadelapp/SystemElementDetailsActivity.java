@@ -28,11 +28,22 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.DefaultValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -50,13 +61,33 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
 
     private Map<String, Picture> pictures;
 
-    private ImageView ivChart, ivCover;
+    private ImageView ivCover;
+    private LineChart ivChart;
     private TextView tvDesc, tvDescChart;
     private Toolbar toolbar;
     private CollapsingToolbarLayout toolBarLayout;
+    private String ts1String;
+    private long ts1Long;
+    private Map<Float, String> valueMap = new HashMap<>();
+    private List<String> xLabels = new ArrayList<>();
+
 
 
     private ActivitySystemElementDetailsBinding binding;
+
+
+    public class StringValueFormatter extends ValueFormatter {
+        private Map<Float, String> valueMap;
+
+        public StringValueFormatter(Map<Float, String> valueMap) {
+            this.valueMap = valueMap;
+        }
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return valueMap.get(value);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +119,14 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         else{
             getElementFromRedisAndFillData(elementId);
         }
-        getDataForChart();
+
+        valueMap.put(1.0f, "OK");
+        valueMap.put(2.0f, "OFF");
+        valueMap.put(3.0f, "Fault");
+        valueMap.put(4.0f, "Alarm");
+
+        //getDataForChart();
+
 
     }
     @Override
@@ -187,7 +225,9 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         ivCover.setImageResource(cp.getElementImage());
         tvDesc.setText(cp.getDescription());
         tvDescChart.setText("Description of chart");
-        ivChart.setImageResource(cp.getElementImage());
+        getHarcodedDataForChart();
+
+        //ivChart.setImageResource(cp.getElementImage());
 
     }
 
@@ -244,6 +284,8 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         ivCover.setImageResource(e.getElementImage());
         tvDesc.setText(e.getDescription());
         tvDescChart.setText("Description of chart");
+        getHarcodedDataForChart();
+
         //ivChart.setImageResource(e.getElementImage());
 
     }
@@ -256,7 +298,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
             case "2":
                 el.setState("OFF");
             case "3":
-                el.setState("ERROR");
+                el.setState("FAULT");
             case "4":
                 el.setState("ALARM");
             default:
@@ -299,58 +341,110 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
 
         List<Entry> entries = new ArrayList<>();
         for (TimeSeriesData timeSeriesData : data) {
-            entries.add(new Entry(timeSeriesData.getTimestamp(), timeSeriesData.getValue()));
+            entries.add(new Entry(timeSeriesData.getTimestamp(), Float.parseFloat(timeSeriesData.getValue())));
         }
+        xLabels.add(String.valueOf(entries.get(0).getX()));
 
-        LineDataSet dataSet = new LineDataSet(entries, "Sensor Data");
-        dataSet.setColor(Color.BLUE);
+        xLabels.add(String.valueOf(entries.get(entries.size()-1).getX()));
+
+
+        LineDataSet dataSet = new LineDataSet(entries, "Element Data");
+        dataSet.setColor(Color.RED);
         dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setDrawValues(true);
+
+        dataSet.setValueFormatter(new StringValueFormatter(valueMap));
+        //dataSet.value
+        setNamesOfAxiss(chart);
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
         chart.invalidate();
+
     }
+
 
 
     private void getHarcodedDataForChart(){
 
         List<TimeSeriesData>data = new ArrayList<>();
         //make some static data
-        showDataInChart(data);
-     }
+        TimeSeriesData tsd = new TimeSeriesData(Long.parseLong("1640995200000"), "1");
+        data.add(tsd);
+        tsd = new TimeSeriesData(Long.parseLong("1643673600000"), "1");
+        data.add(tsd);
+        tsd = new TimeSeriesData(Long.parseLong("1646092800000"), "2");
+        data.add(tsd);
+        tsd = new TimeSeriesData(Long.parseLong("1648771200000"), "2");
+        data.add(tsd);
+        tsd = new TimeSeriesData(Long.parseLong("1651363200000"), "1");
+        data.add(tsd);
+//        tsd = new TimeSeriesData(1643065200, "4");
+//        data.add(tsd);
+//        tsd = new TimeSeriesData(1643151600, "4");
+//        data.add(tsd);
+//        tsd = new TimeSeriesData(1643238000, "1");
+        data.add(tsd);
+//        tsd = new TimeSeriesData(1643151600, "1");
+//        data.add(tsd);
 
-     private void setNamesOfAxiss(){
-         LineChart chart = findViewById(R.id.iv_chart);
+        showDataInChart(data);
+    }
+    private void setNamesOfAxiss(LineChart chart) {
+        //LineChart chart = findViewById(R.id.iv_chart);
 
 // Set the X-axis name
-         XAxis xAxis = chart.getXAxis();
-         xAxis.setValueFormatter(new ValueFormatter() {
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
              @Override
              public String getAxisLabel(float value, AxisBase axis) {
                  // Format the X-axis label as desired
-                 return "X: " + value;
+                 //return "Time: " +value;
+                 return getFormattedDate((long)value);
              }
-         });
-         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-         xAxis.setDrawGridLines(false);
-         xAxis.setGranularity(1f); // only intervals of 1
-         xAxis.setLabelRotationAngle(-45);
+//            public String getFormattedValue(float value) {
+//                // Convert the X-axis value to a date string
+//                return getFormattedDate((long)value);
+//                 //return String.valueOf(value);
+//
+//            }
+        });
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(1f); // only intervals of 1
+        xAxis.setLabelRotationAngle(-45);
 
 // Set the Y-axis name
-         YAxis yAxis = chart.getAxisLeft();
-         yAxis.setValueFormatter(new ValueFormatter() {
+        YAxis yAxis = chart.getAxisLeft();
+        yAxis.setValueFormatter(new ValueFormatter() {
              @Override
              public String getAxisLabel(float value, AxisBase axis) {
                  // Format the Y-axis label as desired
-                 return "Y: " + value;
+                 return "State: " + ConvertFloatValueToStringValue(value);
              }
-         });
-         yAxis.setDrawGridLines(false);
-         yAxis.setGranularity(1f);
+        });
+        yAxis.setDrawGridLines(false);
+        yAxis.setGranularity(1f);
 
-         chart.invalidate();
-     }
+        chart.invalidate();
+    }
 
+    private String getFormattedDate(long timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        return "TIME: "+dateFormat.format(new Date(timestamp));
+    }
+
+    private String ConvertFloatValueToStringValue(float value){
+        if(value==1)
+            return "OK";
+        else if (value==2) {
+            return "OFF";
+        } else if (value==3) {
+            return "FAULT";
+        }
+        else
+            return "ALARM";
+    }
 
     private void showToastMessaggeShort(String messagge){
         Toast.makeText(SystemElementDetailsActivity.this, messagge, Toast.LENGTH_SHORT).show();

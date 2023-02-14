@@ -68,14 +68,15 @@
 
             <ImageView
                 android:id="@+id/overflow"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="-30dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="-45dp"
+                android:layout_marginTop="25dp"
 
                 android:layout_toRightOf="@id/title"
                 android:scaleType="centerCrop"
                 android:background="@color/white"
-                android:src="@drawable/ic_dots" />
+                android:src="@drawable/icon_add_to_favourites40"  />
             </RelativeLayout>
 
 

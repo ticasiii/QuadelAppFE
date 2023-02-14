@@ -2,7 +2,9 @@ package com.example.quadelapp;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -78,6 +80,18 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         holder.title.setText(picture.getTitle());
         holder.description.setText(picture.getDescription());
         holder.cover.setImageResource(picture.getImage());
+
+        setIfFavouritedFromPreferences(picture);
+
+
+
+        if(!picture.isFavourite()){
+            holder.overflow.setImageResource(R.drawable.icon_add_to_favourites40);
+        }
+        else
+            holder.overflow.setImageResource(R.drawable.icon_favourited40);
+
+
         holder.state.setText(picture.getState());
 
 
@@ -109,12 +123,38 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         else {
             holder.stateColor.setBackgroundColor(Color.GREEN);
         }
+
+
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopupMenu(holder.overflow);
+                //showPopupMenu(holder.overflow);
+                if(!picture.isFavourite()){
+                    addPictureToFavourites(picture);
+                    FavouritesAndAlertFragment.fullListPictures.add(picture);
+
+                    //FavouritesAndAlertFragment.adapter.notifyItemInserted(FavouritesAndAlertFragment.fullListPictures.size()-1);
+                    holder.overflow.setImageResource(R.drawable.icon_favourited40);
+
+                }
+                else{
+                    removePictureFromFavourites(picture);
+                    FavouritesAndAlertFragment.fullListPictures.remove(picture);
+
+                    //FavouritesAndAlertFragment.adapter.notifyDataSetChanged();
+                    holder.overflow.setImageResource(R.drawable.icon_add_to_favourites40);
+                }
+
             }
         });
+
+
+//        holder.overflow.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                showPopupMenu(holder.overflow);
+//            }
+//        });
     }
 
     /**
@@ -184,6 +224,54 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         //pictures.addAll(getFilteredPicturesFromBackend(charText));
 
         notifyDataSetChanged();
+    }
+
+
+    private void setIfFavouritedFromPreferences(Picture pic){
+        SharedPreferences favorites = mContext.getActivity().getSharedPreferences("favorites", Context.MODE_PRIVATE);
+        pic.setFavourite(favorites.getBoolean(pic.getId(), false));
+    }
+
+    private void addPictureToFavourites(Picture pic){
+        switchFavoriteState(pic);
+        //FavouritesAndAlertFragment.fullListPictures.add(0, pic);
+        savePictureFavouriteStateToPreferences(pic.getId(), pic.isFavourite());
+        showToastMessaggeShort("Picture is added to favourites");
+    }
+
+    private void savePictureFavouriteStateToPreferences(String pictureId, boolean isFavorite){
+        //SharedPreferences sharedPref = mContext.getActivity().getPreferences(mContext.getContext().MODE_PRIVATE);
+        SharedPreferences favorites = mContext.getActivity().getSharedPreferences("favorites", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = favorites.edit();
+        editor.putBoolean(pictureId, isFavorite);
+        editor.apply();
+    }
+
+    private void removePictureFromFavourites(Picture pic){
+        switchFavoriteState(pic);
+        //FavouritesAndAlertFragment.fullListPictures.remove(pic);
+        removePictureFavouriteStateFromPreferences(pic.getId());
+        showToastMessaggeShort("Picture is removed from favourites");
+    }
+
+    private void removePictureFavouriteStateFromPreferences(String pictureId){
+        //SharedPreferences sharedPref = mContext.getActivity().getPreferences(mContext.getContext().MODE_PRIVATE);
+        SharedPreferences favorites = mContext.getActivity().getSharedPreferences("favorites", Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = favorites.edit();
+        editor.remove(pictureId);
+        editor.commit();
+    }
+
+    private void showToastMessaggeShort(String messagge){
+        Toast.makeText(mContext.getContext(), messagge, Toast.LENGTH_SHORT).show();
+    }
+
+    private void switchFavoriteState(Picture picture){
+        if(picture.isFavourite()) {
+            picture.setFavourite(false);
+        }
+        else picture.setFavourite(true);
     }
 
 }
