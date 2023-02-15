@@ -1,10 +1,14 @@
 package com.example.quadelapp;
 
+import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -23,14 +27,15 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, description;
-        public ImageView cover, overflow;
+        public ImageView cover;
+        public RelativeLayout ivState;
 
         public MyViewHolder(View view) {
             super(view);
             title = view.findViewById(R.id.title);
             description = view.findViewById(R.id.description);
             cover = view.findViewById(R.id.cover);
-            overflow = view.findViewById(R.id.ivState);
+            ivState = view.findViewById(R.id.ivState);
         }
     }
 
@@ -69,7 +74,8 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
         holder.title.setText(systemElement.getTitle());
         holder.description.setText(systemElement.getDescription());
         holder.cover.setImageResource(systemElement.getElementImage());
-        holder.overflow.setOnClickListener(new View.OnClickListener() {
+        blinkStateLayout(holder.ivState);
+        holder.ivState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //showPopupMenu(holder.overflow);
@@ -81,5 +87,13 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
     @Override
     public int getItemCount() {
         return systemElements.size();
+    }
+
+    public void blinkStateLayout(RelativeLayout layout){
+        ObjectAnimator blinkAnimation = ObjectAnimator.ofArgb(layout, "backgroundColor",mContext.getResources().getColor(R.color.cardview_green_background), Color.WHITE );
+        blinkAnimation.setDuration(200);
+        blinkAnimation.setRepeatCount(ObjectAnimator.INFINITE);
+        blinkAnimation.setRepeatMode(ObjectAnimator.REVERSE);
+        blinkAnimation.start();
     }
 }

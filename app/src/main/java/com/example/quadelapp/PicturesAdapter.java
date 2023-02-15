@@ -87,6 +87,9 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         holder.description.setText(picture.getDescription());
         holder.cover.setImageResource(picture.getImage());
 
+        blinkStateIVState(holder.ivState, setColorByState(picture.getState()));
+
+
         setIfFavouritedFromPreferences(picture);
 
 
@@ -100,34 +103,34 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         holder.state.setText(picture.getState());
 
 
-        if(picture.getState() == "ALARM"){
-            holder.ivState.setBackgroundColor(0xFFFF0000);
-
-            // adding the color to be shown
-            ObjectAnimator animator = ObjectAnimator.ofInt(holder.ivState, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
-
-            // duration of one color
-            animator.setDuration(2000);
-            animator.setEvaluator(new ArgbEvaluator());
-
-            // color will be show in reverse manner
-            animator.setRepeatCount(Animation.REVERSE);
-
-            // It will be repeated up to infinite time
-            animator.setRepeatCount(Animation.INFINITE);
-            animator.start();
-
-
-        }
-        else if(picture.getState() == "OFF"){
-            holder.ivState.setBackgroundColor(0xFF808080);
-        }
-        else if(picture.getState() == "ERROR"){
-            holder.ivState.setBackgroundColor(0xFFA020F0);
-        }
-        else {
-            holder.ivState.setBackgroundColor(Color.GREEN);
-        }
+//        if(picture.getState() == "ALARM"){
+//            holder.ivState.setBackgroundColor(0xFFFF0000);
+//
+//            // adding the color to be shown
+//            ObjectAnimator animator = ObjectAnimator.ofInt(holder.ivState, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
+//
+//            // duration of one color
+//            animator.setDuration(2000);
+//            animator.setEvaluator(new ArgbEvaluator());
+//
+//            // color will be show in reverse manner
+//            animator.setRepeatCount(Animation.REVERSE);
+//
+//            // It will be repeated up to infinite time
+//            animator.setRepeatCount(Animation.INFINITE);
+//            animator.start();
+//
+//
+//        }
+//        else if(picture.getState() == "OFF"){
+//            holder.ivState.setBackgroundColor(0xFF808080);
+//        }
+//        else if(picture.getState() == "ERROR"){
+//            holder.ivState.setBackgroundColor(0xFFA020F0);
+//        }
+//        else {
+//            holder.ivState.setBackgroundColor(Color.GREEN);
+//        }
 
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,6 +154,42 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
 
             }
         });
+    }
+
+    private void blinkStateIVState(ImageView ivState, int colorState){
+        //holder.ivState.setBackgroundColor(colorState);
+
+        // adding the color to be shown
+        ObjectAnimator animator = ObjectAnimator.ofArgb(ivState, "backgroundColor", colorState, Color.WHITE, colorState);
+
+        // duration of one color
+        animator.setDuration(2000);
+        animator.setEvaluator(new ArgbEvaluator());
+
+        // color will be show in reverse manner
+        animator.setRepeatCount(Animation.REVERSE);
+
+        // It will be repeated up to infinite time
+        animator.setRepeatCount(Animation.INFINITE);
+        animator.start();
+    }
+
+    public int setColorByState(String state){
+        int colorState;
+
+        switch (state){
+            case "ALARM":
+                colorState = Color.RED;
+            case "FAULT":
+                colorState = Color.YELLOW;
+            case "OFF":
+                colorState = Color.GRAY;
+            case "OK":
+                colorState = Color.GREEN;
+            default:colorState = Color.GREEN;
+        }
+        return colorState;
+
     }
 
     private void setIfFavouritedFromPreferences(Picture pic){

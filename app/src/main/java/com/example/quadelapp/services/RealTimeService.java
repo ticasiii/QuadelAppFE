@@ -44,7 +44,7 @@ public class RealTimeService extends Service {
                 sendRetrofitRequest();
             }
         };
-        timer.schedule(timerTask, 0, 2000); // run the task every 2 seconds
+        timer.schedule(timerTask, 0, 5000); // run the task every 2 seconds
         return START_STICKY;
     }
 

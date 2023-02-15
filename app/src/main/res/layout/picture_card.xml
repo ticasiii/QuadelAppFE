@@ -79,8 +79,7 @@
                 android:layout_toEndOf="@id/relative_layout"
                 android:layout_marginStart="-40dp"
                 android:scaleType="centerCrop"
-                android:background="@drawable/rounded_corner_shape"
-                android:backgroundTint="@color/cardview_green_background" />
+                android:background="@drawable/rounded_corner_shape" />
 
             <ImageView
                 android:id="@+id/overflow"

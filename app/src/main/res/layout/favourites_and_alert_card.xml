@@ -37,8 +37,7 @@
                 android:layout_marginBottom="40dp"
                 android:layout_toEndOf="@id/cover"
                 android:scaleType="centerCrop"
-                android:background="@drawable/rounded_corner_shape"
-                android:backgroundTint="@color/cardview_green_background" />
+                android:background="@drawable/rounded_corner_shape" />
 
 
             <RelativeLayout
@@ -87,7 +86,7 @@
 
                 android:layout_toRightOf="@id/title"
                 android:scaleType="centerCrop"
-                android:background="@drawable/rounded_corner_shape"
+                android:background="@drawable/circle_shape"
                 android:src="@drawable/icon_add_to_favourites40"  />
             </RelativeLayout>
 

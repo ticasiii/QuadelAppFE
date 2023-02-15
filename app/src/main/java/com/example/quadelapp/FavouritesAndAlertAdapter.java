@@ -84,10 +84,11 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         holder.title.setText(picture.getTitle());
         holder.description.setText(picture.getDescription());
         holder.cover.setImageResource(picture.getImage());
+        holder.state.setText(picture.getState());
+
+        blinkStateIVState(holder.ivState, setColorByState(picture.getState()));
 
         setIfFavouritedFromPreferences(picture);
-
-
 
         if(!picture.isFavourite()){
             holder.overflow.setImageResource(R.drawable.icon_add_to_favourites40);
@@ -96,11 +97,7 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
             holder.overflow.setImageResource(R.drawable.icon_favourited40);
 
 
-        holder.state.setText(picture.getState());
-        ObjectAnimator animator = ObjectAnimator.ofInt(holder.ivState, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
 
-
-        setAnimator(animator ,setColorByState(picture.getState()));
 
 
 
@@ -190,14 +187,14 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
 
     }
 
-    private void setAnimator(ObjectAnimator animator, int colorState){
+    private void blinkStateIVState(ImageView ivState, int colorState){
         //holder.ivState.setBackgroundColor(colorState);
 
         // adding the color to be shown
-//        ObjectAnimator animator = ObjectAnimator.ofInt(imageViewState, "backgroundColor", colorState, Color.BLACK, colorState);
+        ObjectAnimator animator = ObjectAnimator.ofArgb(ivState, "backgroundColor", colorState, Color.WHITE, colorState);
 
         // duration of one color
-        animator.setDuration(500);
+        animator.setDuration(2000);
         animator.setEvaluator(new ArgbEvaluator());
 
         // color will be show in reverse manner
