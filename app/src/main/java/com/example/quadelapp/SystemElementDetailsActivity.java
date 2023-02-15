@@ -122,8 +122,8 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
 
         valueMap.put(1.0f, "OK");
         valueMap.put(2.0f, "OFF");
-        valueMap.put(3.0f, "Fault");
-        valueMap.put(4.0f, "Alarm");
+        valueMap.put(3.0f, "FAULT");
+        valueMap.put(4.0f, "ALARM");
 
         //getDataForChart();
 

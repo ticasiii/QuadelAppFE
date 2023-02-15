@@ -30,7 +30,7 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
             title = view.findViewById(R.id.title);
             description = view.findViewById(R.id.description);
             cover = view.findViewById(R.id.cover);
-            overflow = view.findViewById(R.id.overflow);
+            overflow = view.findViewById(R.id.ivState);
         }
     }
 

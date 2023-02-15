@@ -24,8 +24,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quadelapp.Models.Picture;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAndAlertAdapter.MyViewHolder> {
 
@@ -33,9 +35,10 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
     private List<Picture> favoritesPictures;
     public List<Picture> pictures;
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, description, state;
-        public ImageView cover, overflow;
+        public ImageView cover, overflow, ivState;
         public RelativeLayout stateColor;
 
         public MyViewHolder(View view) {
@@ -46,6 +49,7 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
             overflow = view.findViewById(R.id.overflow);
             stateColor = view.findViewById(R.id.statecolor);
             state = view.findViewById(R.id.state);
+            ivState = view.findViewById(R.id.ivState);
         }
     }
     public FavouritesAndAlertAdapter(Fragment mContext, List<Picture> pics) {
@@ -93,36 +97,47 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
 
 
         holder.state.setText(picture.getState());
+        ObjectAnimator animator = ObjectAnimator.ofInt(holder.ivState, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
 
 
-        if(picture.getState() == "ALARM"){
-            holder.stateColor.setBackgroundColor(0xFFFF0000);
-
-            // adding the color to be shown
-            ObjectAnimator animator = ObjectAnimator.ofInt(holder.stateColor, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
-
-            // duration of one color
-            animator.setDuration(2000);
-            animator.setEvaluator(new ArgbEvaluator());
-
-            // color will be show in reverse manner
-            animator.setRepeatCount(Animation.REVERSE);
-
-            // It will be repeated up to infinite time
-            animator.setRepeatCount(Animation.INFINITE);
-            animator.start();
+        setAnimator(animator ,setColorByState(picture.getState()));
 
 
-        }
-        else if(picture.getState() == "OFF"){
-            holder.stateColor.setBackgroundColor(0xFF808080);
-        }
-        else if(picture.getState() == "ERROR"){
-            holder.stateColor.setBackgroundColor(0xFFA020F0);
-        }
-        else {
-            holder.stateColor.setBackgroundColor(Color.GREEN);
-        }
+
+//        if(picture.getState() == "ALARM"){
+//            //holder.stateColor.setBackgroundColor(0xFFFF0000);
+//            holder.ivState.setBackgroundColor(Color.RED);
+//
+//            // adding the color to be shown
+//            ObjectAnimator animator = ObjectAnimator.ofInt(holder.stateColor, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
+//
+//            // duration of one color
+//            animator.setDuration(2000);
+//            animator.setEvaluator(new ArgbEvaluator());
+//
+//            // color will be show in reverse manner
+//            animator.setRepeatCount(Animation.REVERSE);
+//
+//            // It will be repeated up to infinite time
+//            animator.setRepeatCount(Animation.INFINITE);
+//            animator.start();
+//
+//
+//        }
+//        else if(picture.getState() == "OFF"){
+//            holder.ivState.setBackgroundColor(Color.GRAY);
+//
+//        }
+//        else if(picture.getState() == "FAULT"){
+//            //holder.stateColor.setBackgroundColor(0xFFA020F0);
+//            holder.ivState.setBackgroundColor(Color.YELLOW);
+//
+//        }
+//        else {
+//            //holder.stateColor.setBackgroundColor(Color.GREEN);
+//            holder.ivState.setBackgroundColor(Color.YELLOW);
+//
+//        }
 
 
         holder.overflow.setOnClickListener(new View.OnClickListener() {
@@ -155,6 +170,42 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
 //                showPopupMenu(holder.overflow);
 //            }
 //        });
+    }
+
+    public int setColorByState(String state){
+        int colorState;
+
+        switch (state){
+            case "ALARM":
+                colorState = Color.RED;
+            case "FAULT":
+                colorState = Color.YELLOW;
+            case "OFF":
+                colorState = Color.GRAY;
+            case "OK":
+                colorState = Color.GREEN;
+            default:colorState = Color.GREEN;
+        }
+        return colorState;
+
+    }
+
+    private void setAnimator(ObjectAnimator animator, int colorState){
+        //holder.ivState.setBackgroundColor(colorState);
+
+        // adding the color to be shown
+//        ObjectAnimator animator = ObjectAnimator.ofInt(imageViewState, "backgroundColor", colorState, Color.BLACK, colorState);
+
+        // duration of one color
+        animator.setDuration(500);
+        animator.setEvaluator(new ArgbEvaluator());
+
+        // color will be show in reverse manner
+        animator.setRepeatCount(Animation.REVERSE);
+
+        // It will be repeated up to infinite time
+        animator.setRepeatCount(Animation.INFINITE);
+        animator.start();
     }
 
     /**

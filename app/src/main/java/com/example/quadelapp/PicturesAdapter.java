@@ -38,7 +38,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, description, state;
-        public ImageView cover, overflow;
+        public ImageView cover, overflow, ivState;
         public RelativeLayout stateColor, relative_layout_state;
 
         public MyViewHolder(View view) {
@@ -50,6 +50,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
             stateColor = view.findViewById(R.id.relative_layout);
             state = view.findViewById(R.id.state);
             relative_layout_state = view.findViewById(R.id.relative_layout_state);
+            ivState = view.findViewById(R.id.ivState);
         }
     }
 
@@ -85,6 +86,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         holder.title.setText(picture.getTitle());
         holder.description.setText(picture.getDescription());
         holder.cover.setImageResource(picture.getImage());
+
         setIfFavouritedFromPreferences(picture);
 
 
@@ -99,10 +101,10 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
 
 
         if(picture.getState() == "ALARM"){
-            holder.relative_layout_state.setBackgroundColor(0xFFFF0000);
+            holder.ivState.setBackgroundColor(0xFFFF0000);
 
             // adding the color to be shown
-            ObjectAnimator animator = ObjectAnimator.ofInt(holder.relative_layout_state, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
+            ObjectAnimator animator = ObjectAnimator.ofInt(holder.ivState, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
 
             // duration of one color
             animator.setDuration(2000);
@@ -118,13 +120,13 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
 
         }
         else if(picture.getState() == "OFF"){
-            holder.relative_layout_state.setBackgroundColor(0xFF808080);
+            holder.ivState.setBackgroundColor(0xFF808080);
         }
         else if(picture.getState() == "ERROR"){
-            holder.relative_layout_state.setBackgroundColor(0xFFA020F0);
+            holder.ivState.setBackgroundColor(0xFFA020F0);
         }
         else {
-            holder.relative_layout_state.setBackgroundColor(Color.GREEN);
+            holder.ivState.setBackgroundColor(Color.GREEN);
         }
 
         holder.overflow.setOnClickListener(new View.OnClickListener() {

@@ -70,6 +70,17 @@
                     android:layout_below="@id/description"/>
 
             </RelativeLayout>
+            <ImageView
+                android:id="@+id/ivState"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="40dp"
+                android:layout_toEndOf="@id/relative_layout"
+                android:layout_marginStart="-40dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/rounded_corner_shape"
+                android:backgroundTint="@color/cardview_green_background" />
 
             <ImageView
                 android:id="@+id/overflow"
@@ -80,6 +91,8 @@
                 android:layout_alignEnd="@id/relative_layout"
                 android:layout_below="@id/relative_layout"
                 android:scaleType="centerCrop"
+                android:background="@drawable/circle_shape"
+
                 android:src="@drawable/icon_add_to_favourites40" />
 
 

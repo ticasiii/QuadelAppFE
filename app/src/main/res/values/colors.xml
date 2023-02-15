@@ -9,5 +9,12 @@
     <color name="white">#FFFFFFFF</color>
     <color name="picture_title">#4C4C4C</color>
     <color name="cardview_green_background">#00FF00</color>
+    <color name="color_alarm">#FF0000</color>
+    <color name="color_off">#666666</color>
+    <color name="color_fault">#FFAA00</color>
+    <color name="color_ok">#00FF00</color>
+
+
+
 
 </resources>

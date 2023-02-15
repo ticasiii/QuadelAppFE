@@ -28,6 +28,18 @@
                 android:contentDescription="@string/todo"
                 android:scaleType="fitXY" />
 
+            <ImageView
+                android:id="@+id/ivState"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="-45dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="40dp"
+                android:layout_toEndOf="@id/cover"
+                android:scaleType="centerCrop"
+                android:background="@drawable/rounded_corner_shape"
+                android:backgroundTint="@color/cardview_green_background" />
+
 
             <RelativeLayout
                 android:id="@+id/statecolor"
@@ -75,7 +87,7 @@
 
                 android:layout_toRightOf="@id/title"
                 android:scaleType="centerCrop"
-                android:background="@color/white"
+                android:background="@drawable/rounded_corner_shape"
                 android:src="@drawable/icon_add_to_favourites40"  />
             </RelativeLayout>
 

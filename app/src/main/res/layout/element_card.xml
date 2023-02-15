@@ -13,7 +13,8 @@
         android:layout_height="120dp"
         android:layout_gravity="center"
         android:layout_margin="@dimen/card_margin"
-        android:elevation="3dp">
+        android:elevation="3dp"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -21,12 +22,13 @@
 
             <ImageView
                 android:id="@+id/cover"
-                android:layout_width="108dp"
+                android:layout_width="wrap_content"
                 android:layout_height="125dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
+                android:background="@drawable/circle_shape"
                 android:contentDescription="@string/todo"
-                android:scaleType="fitXY" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/album3"
+                android:adjustViewBounds="true"/>
 
             <TextView
                 android:id="@+id/title"
@@ -53,16 +55,18 @@
 
 
             <ImageView
-                android:id="@+id/overflow"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="-30dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="@color/cardview_green_background"
+                android:id="@+id/ivState"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="-40dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="40dp"
                 android:layout_toRightOf="@id/title"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_dots" />
+                android:background="@drawable/rounded_corner_shape"
+                android:backgroundTint="@color/cardview_green_background"
+
+                />
 
 
         </RelativeLayout>
