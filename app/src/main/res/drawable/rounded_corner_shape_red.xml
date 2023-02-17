@@ -5,7 +5,7 @@
         <shape
             android:shape="rectangle">
             <corners android:radius="5dp" />
-            <solid android:color="@color/cardview_green_background" />
+            <solid android:color="@color/color_alarm" />
             <size
                 android:height="30dp"
                 android:width="30dp" />

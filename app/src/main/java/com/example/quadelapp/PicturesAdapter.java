@@ -87,19 +87,9 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         holder.description.setText(picture.getDescription());
         holder.cover.setImageResource(picture.getImage());
 
-        blinkStateIVState(holder.ivState, setColorByState(picture.getState()));
-
-
+        setStateIcon(holder.ivState, picture.getState());
         setIfFavouritedFromPreferences(picture);
-
-
-
-        if(!picture.isFavourite()){
-            holder.overflow.setImageResource(R.drawable.icon_add_to_favourites40);
-        }
-        else
-            holder.overflow.setImageResource(R.drawable.icon_favourited40);
-
+        setFavouriteIcon(holder.overflow, picture.isFavourite());
         holder.state.setText(picture.getState());
 
 
@@ -139,21 +129,23 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
                 if(!picture.isFavourite()){
                     addPictureToFavourites(picture);
                     FavouritesAndAlertFragment.fullListPictures.add(picture);
-
-                    //FavouritesAndAlertFragment.adapter.notifyItemInserted(FavouritesAndAlertFragment.fullListPictures.size()-1);
                     holder.overflow.setImageResource(R.drawable.icon_favourited40);
-
                 }
                 else{
                     removePictureFromFavourites(picture);
                     FavouritesAndAlertFragment.fullListPictures.remove(picture);
-
-                    //FavouritesAndAlertFragment.adapter.notifyDataSetChanged();
                     holder.overflow.setImageResource(R.drawable.icon_add_to_favourites40);
                 }
-
             }
         });
+    }
+
+    private void setFavouriteIcon(ImageView iv, boolean isFavourite){
+        if(!isFavourite){
+            iv.setImageResource(R.drawable.icon_add_to_favourites40);
+        }
+        else
+            iv.setImageResource(R.drawable.icon_favourited40);
     }
 
     private void blinkStateIVState(ImageView ivState, int colorState){
@@ -174,22 +166,18 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         animator.start();
     }
 
-    public int setColorByState(String state){
-        int colorState;
-
+    public void setStateIcon(ImageView iv, String state){
         switch (state){
             case "ALARM":
-                colorState = Color.RED;
+                iv.setImageResource(R.drawable.ic_red_circle);
             case "FAULT":
-                colorState = Color.YELLOW;
+                iv.setImageResource(R.drawable.ic_yellow_circle);
             case "OFF":
-                colorState = Color.GRAY;
+                iv.setImageResource(R.drawable.ic_grey_circle);
             case "OK":
-                colorState = Color.GREEN;
-            default:colorState = Color.GREEN;
+                iv.setImageResource(R.drawable.ic_green_circle);
+            default: iv.setImageResource(R.drawable.ic_green_circle);
         }
-        return colorState;
-
     }
 
     private void setIfFavouritedFromPreferences(Picture pic){
@@ -238,41 +226,6 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         }
         else picture.setFavourite(true);
     }
-
-    /**
-     * Showing popup menu when tapping on 3 dots
-     */
-/*    private void showPopupMenu(View view) {
-        // inflate menu
-        PopupMenu popup = new PopupMenu(mContext.getContext(), view);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.picture_menu, popup.getMenu());
-        popup.setOnMenuItemClickListener(new PicturesAdapter.MyMenuItemClickListener());
-        popup.show();
-    }*/
-
-    /**
-     * Click listener for popup menu items
-     */
-/*    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
-
-        public MyMenuItemClickListener() {
-        }
-
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.action_add_favourite:
-                    Toast.makeText(mContext.getContext(), "Add to favourite", Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.action_play_next:
-                    Toast.makeText(mContext.getContext(), "Play next", Toast.LENGTH_SHORT).show();
-                    return true;
-                default:
-            }
-            return false;
-        }
-    }*/
 
     @Override
     public int getItemCount() {

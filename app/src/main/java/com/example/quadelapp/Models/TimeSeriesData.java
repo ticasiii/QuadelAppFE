@@ -5,7 +5,7 @@ public class TimeSeriesData {
     private String value;
 
     public TimeSeriesData(long timestamp, String value) {
-        this.timestamp = timestamp;
+        this.timestamp = timestamp / 1000 / 3600;
         this.value = value;
     }
 

@@ -59,6 +59,7 @@ public class PictureDetailsActivity extends AppCompatActivity {
     private TextView tvDesc, tvDescChart;
     private Toolbar toolbar;
     private CollapsingToolbarLayout toolBarLayout;
+    private MenuItem stateItem;
 
 
     private ActivityPictureDetailsBinding binding;
@@ -124,28 +125,43 @@ public class PictureDetailsActivity extends AppCompatActivity {
         return true;
     }
 
-    private void setToolbarColorBasedOnState(CollapsingToolbarLayout toolBarLayout, String state){
-        int color;
+//    private void setToolbarColorBasedOnState(CollapsingToolbarLayout toolBarLayout, String state){
+//        int color;
+//        if(Objects.equals(state, "ALARM")){
+//            color = Color.RED;
+//        }
+//        else if(Objects.equals(state, "ERROR"))
+//        {
+//            color = Color.YELLOW;
+//        } else if (Objects.equals(state, "OFF")) {
+//            color = Color.GRAY;
+//        }
+//        else {
+//            color = Color.GREEN;
+//        }
+//        toolBarLayout.setContentScrimColor(color);
+//            // adding the color to be shown
+//            ObjectAnimator animator1 = ObjectAnimator.ofInt(toolBarLayout, "backgroundColor", color, Color.WHITE, color);
+//            setAnimator(animator1);
+//
+//            ObjectAnimator animator2 = ObjectAnimator.ofInt(toolBarLayout, "contentScrimColor", color, Color.WHITE, color);
+//            setAnimator(animator2);
+//
+//    }
+
+    private void setMenuIconBasedOnState(MenuItem menuItem, String state){
         if(Objects.equals(state, "ALARM")){
-            color = Color.RED;
+            menuItem.setIcon(R.drawable.ic_red_circle);
         }
-        else if(Objects.equals(state, "ERROR"))
-        {
-            color = Color.YELLOW;
-        } else if (Objects.equals(state, "OFF")) {
-            color = Color.GRAY;
+        else if(Objects.equals(state, "FAULT")){
+            menuItem.setIcon(R.drawable.ic_yellow_circle);
         }
-        else {
-            color = Color.GREEN;
+        else if(Objects.equals(state, "OFF")){
+            menuItem.setIcon(R.drawable.ic_grey_circle);
         }
-        toolBarLayout.setContentScrimColor(color);
-            // adding the color to be shown
-            ObjectAnimator animator1 = ObjectAnimator.ofInt(toolBarLayout, "backgroundColor", color, Color.WHITE, color);
-            setAnimator(animator1);
-
-            ObjectAnimator animator2 = ObjectAnimator.ofInt(toolBarLayout, "contentScrimColor", color, Color.WHITE, color);
-            setAnimator(animator2);
-
+        else if(Objects.equals(state, "OK")){
+            menuItem.setIcon(R.drawable.ic_green_circle);
+        }
     }
 
     @Override
@@ -153,6 +169,7 @@ public class PictureDetailsActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_picture_details, menu);
         MenuItem favouritesItem = menu.findItem(R.id.action_favourites);
+        stateItem = menu.findItem(R.id.action_state);
 
         if(isFavouritedInPreferences(pictureId)){
             favouritesItem.setIcon(R.drawable.icon_favourited40);
@@ -171,6 +188,8 @@ public class PictureDetailsActivity extends AppCompatActivity {
             case R.id.action_favourites:
                 clickOnMenuFavourites(item);
                 return true;
+            case R.id.action_state:
+                clickOnMenuState();
 /*            case R.id.help:
                 showHelp();
                 return true;*/
@@ -188,6 +207,9 @@ public class PictureDetailsActivity extends AppCompatActivity {
             removePictureFromFavourites(pictureId);
             item.setIcon(R.drawable.icon_add_to_favourites40);
         }
+    }
+    private void clickOnMenuState(){
+        showToastMessaggeShort("This is the state of this room");
     }
 
     private boolean isFavouritedInPreferences(String pictureId){
@@ -298,7 +320,8 @@ public class PictureDetailsActivity extends AppCompatActivity {
         }        toolBarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.black));
         toolBarLayout.setCollapsedTitleTextColor(getResources().getColor(android.R.color.black));
 
-        setToolbarColorBasedOnState(toolBarLayout, picture.getState());
+        //setToolbarColorBasedOnState(toolBarLayout, picture.getState());
+        setMenuIconBasedOnState(stateItem, picture.getState());
 
         ivCover.setImageResource(picture.getImage());
         tvDesc.setText(picture.getDescription());

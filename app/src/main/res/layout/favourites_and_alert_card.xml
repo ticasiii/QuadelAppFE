@@ -36,8 +36,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="40dp"
                 android:layout_toEndOf="@id/cover"
-                android:scaleType="centerCrop"
-                android:background="@drawable/rounded_corner_shape" />
+                android:scaleType="centerCrop" />
 
 
             <RelativeLayout

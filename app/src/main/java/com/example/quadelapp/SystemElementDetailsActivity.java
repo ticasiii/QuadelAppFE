@@ -10,6 +10,9 @@ import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -63,6 +66,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
 
     private ImageView ivCover;
     private LineChart ivChart;
+    private MenuItem stateItem;
     private TextView tvDesc, tvDescChart;
     private Toolbar toolbar;
     private CollapsingToolbarLayout toolBarLayout;
@@ -129,35 +133,57 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
 
 
     }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
 
-    private void setToolbarColorBasedOnState(CollapsingToolbarLayout toolBarLayout, String state){
-        int color;
-        if(Objects.equals(state, "ALARM")){
-            color = Color.RED;
-        }
-        else if(Objects.equals(state, "ERROR"))
-        {
-            color = Color.YELLOW;
-        } else if (Objects.equals(state, "OFF")) {
-            color = Color.GRAY;
-        }
-        else {
-            color = Color.GREEN;
-        }
-        toolBarLayout.setContentScrimColor(color);
-        // adding the color to be shown
-        ObjectAnimator animator1 = ObjectAnimator.ofInt(toolBarLayout, "backgroundColor", color, Color.WHITE, color);
-        setAnimator(animator1);
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.system_element_details_menu, menu);
+        stateItem = menu.findItem(R.id.action_state);
+//        stateItem.setIcon(R.drawable.rounded_corner_shape);
+//        stateItem.setIcon(R.drawable.rounded_corner_shape_red);
 
-        ObjectAnimator animator2 = ObjectAnimator.ofInt(toolBarLayout, "contentScrimColor", color, Color.WHITE, color);
-        setAnimator(animator2);
 
+
+//        if(isFavouritedInPreferences(pictureId)){
+//            favouritesItem.setIcon(R.drawable.icon_favourited40);
+//        }
+//        else{
+//            favouritesItem.setIcon(R.drawable.icon_add_to_favourites40);
+//        }
+
+
+        return true;
     }
+
+//    private void setToolbarColorBasedOnState(CollapsingToolbarLayout toolBarLayout, String state){
+//        int color;
+//        if(Objects.equals(state, "ALARM")){
+//            color = Color.RED;
+//        }
+//        else if(Objects.equals(state, "ERROR"))
+//        {
+//            color = Color.YELLOW;
+//        } else if (Objects.equals(state, "OFF")) {
+//            color = Color.GRAY;
+//        }
+//        else {
+//            color = Color.GREEN;
+//        }
+//        toolBarLayout.setContentScrimColor(color);
+//        // adding the color to be shown
+//        ObjectAnimator animator1 = ObjectAnimator.ofInt(toolBarLayout, "backgroundColor", color, Color.WHITE, color);
+//        setAnimator(animator1);
+//
+//        ObjectAnimator animator2 = ObjectAnimator.ofInt(toolBarLayout, "contentScrimColor", color, Color.WHITE, color);
+//        setAnimator(animator2);
+//
+//    }
     private void setAnimator(ObjectAnimator animator){
 
         // duration of one color
@@ -220,7 +246,8 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         }        toolBarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.black));
         toolBarLayout.setCollapsedTitleTextColor(getResources().getColor(android.R.color.black));
 
-        setToolbarColorBasedOnState(toolBarLayout, cp.getState());
+        //setToolbarColorBasedOnState(toolBarLayout, cp.getState());
+        setMenuItemColorBasedOnState(cp.getState());
 
         ivCover.setImageResource(cp.getElementImage());
         tvDesc.setText(cp.getDescription());
@@ -279,7 +306,9 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         }        toolBarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.black));
         toolBarLayout.setCollapsedTitleTextColor(getResources().getColor(android.R.color.black));
 
-        setToolbarColorBasedOnState(toolBarLayout, e.getState());
+        //setToolbarColorBasedOnState(toolBarLayout, e.getState());
+        setMenuItemColorBasedOnState(e.getState());
+
 
         ivCover.setImageResource(e.getElementImage());
         tvDesc.setText(e.getDescription());
@@ -305,6 +334,20 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
                 el.setState("OK");
         }
 
+    }
+    private void setMenuItemColorBasedOnState(String state){
+        if(Objects.equals(state, "ALARM")){
+            stateItem.setIcon(R.drawable.ic_red_circle);
+        }
+        else if(Objects.equals(state, "OK")){
+            stateItem.setIcon(R.drawable.ic_green_circle);
+        }
+        else if(Objects.equals(state, "FAULT")){
+            stateItem.setIcon(R.drawable.ic_yellow_circle);
+        }
+        else if(Objects.equals(state, "OFF")){
+            stateItem.setIcon(R.drawable.ic_grey_circle);
+        }
     }
 
     private void getDataForChart(){
@@ -343,9 +386,9 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         for (TimeSeriesData timeSeriesData : data) {
             entries.add(new Entry(timeSeriesData.getTimestamp(), Float.parseFloat(timeSeriesData.getValue())));
         }
-        xLabels.add(String.valueOf(entries.get(0).getX()));
-
-        xLabels.add(String.valueOf(entries.get(entries.size()-1).getX()));
+//        xLabels.add(String.valueOf(entries.get(0).getX()));
+//
+//        xLabels.add(String.valueOf(entries.get(entries.size()-1).getX()));
 
 
         LineDataSet dataSet = new LineDataSet(entries, "Element Data");
@@ -369,7 +412,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
 
         List<TimeSeriesData>data = new ArrayList<>();
         //make some static data
-        TimeSeriesData tsd = new TimeSeriesData(Long.parseLong("1640995200000"), "1");
+        TimeSeriesData tsd = new TimeSeriesData(1640995200000L, "1");
         data.add(tsd);
         tsd = new TimeSeriesData(Long.parseLong("1643673600000"), "1");
         data.add(tsd);
@@ -430,8 +473,8 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
     }
 
     private String getFormattedDate(long timestamp) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        return "TIME: "+dateFormat.format(new Date(timestamp));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        return "TIME: "+dateFormat.format(new Date(timestamp * 1000 * 3600));
     }
 
     private String ConvertFloatValueToStringValue(float value){

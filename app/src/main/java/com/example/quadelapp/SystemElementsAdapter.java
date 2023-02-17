@@ -28,7 +28,7 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, description;
         public ImageView cover;
-        public RelativeLayout ivState;
+        public ImageView ivState;
 
         public MyViewHolder(View view) {
             super(view);
@@ -74,7 +74,9 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
         holder.title.setText(systemElement.getTitle());
         holder.description.setText(systemElement.getDescription());
         holder.cover.setImageResource(systemElement.getElementImage());
-        blinkStateLayout(holder.ivState);
+        holder.ivState.setImageResource(R.drawable.ic_green_circle);
+        setStateImageView(holder.ivState, systemElement.getState());
+        //blinkStateLayout(holder.ivState);
         holder.ivState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,6 +89,17 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
     @Override
     public int getItemCount() {
         return systemElements.size();
+    }
+
+    public void setStateImageView(ImageView iv, String state){
+        if(state == "OK") {
+            iv.setImageResource(R.drawable.ic_green_circle);
+        } else if (state == "ALARM") {
+            iv.setImageResource(R.drawable.ic_red_circle);
+        } else if (state == "FAULT") {
+            iv.setImageResource(R.drawable.ic_yellow_circle);
+        } else
+            iv.setImageResource(R.drawable.ic_grey_circle);
     }
 
     public void blinkStateLayout(RelativeLayout layout){

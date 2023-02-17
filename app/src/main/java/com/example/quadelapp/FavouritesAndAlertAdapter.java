@@ -56,7 +56,6 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         this.mContext = mContext;
         this.pictures = pics;
         notifyDataSetChanged();
-        //this.fullListPictures = pics;
     }
 
     @Override
@@ -69,7 +68,6 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
             public void onClick(View v) {
                 String pictureId = pictures.get(myViewHolder.getAdapterPosition()).getId();
                 Intent intent = new Intent(mContext.getContext(), PictureDetailsActivity.class);
-                //ovde ubaciti gde da ide dalje
                 intent.putExtra("pictureId", pictureId);
                 intent.putExtra("activityId", "favAdapter");
                 mContext.getContext().startActivity(intent);
@@ -85,22 +83,12 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         holder.description.setText(picture.getDescription());
         holder.cover.setImageResource(picture.getImage());
         holder.state.setText(picture.getState());
-
-        blinkStateIVState(holder.ivState, setColorByState(picture.getState()));
-
+        setStateIcon(holder.ivState, picture.getState());
         setIfFavouritedFromPreferences(picture);
-
-        if(!picture.isFavourite()){
-            holder.overflow.setImageResource(R.drawable.icon_add_to_favourites40);
-        }
-        else
-            holder.overflow.setImageResource(R.drawable.icon_favourited40);
+        setFavouriteIcon(holder.overflow, picture.isFavourite());
 
 
-
-
-
-
+        //blinkStateIVState(holder.ivState, setColorByState(picture.getState()));
 //        if(picture.getState() == "ALARM"){
 //            //holder.stateColor.setBackgroundColor(0xFFFF0000);
 //            holder.ivState.setBackgroundColor(Color.RED);
@@ -185,6 +173,28 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         }
         return colorState;
 
+    }
+
+    public void setStateIcon(ImageView iv, String state){
+        switch (state){
+            case "ALARM":
+                iv.setImageResource(R.drawable.ic_red_circle);
+            case "FAULT":
+                iv.setImageResource(R.drawable.ic_yellow_circle);
+            case "OFF":
+                iv.setImageResource(R.drawable.ic_grey_circle);
+            case "OK":
+                iv.setImageResource(R.drawable.ic_green_circle);
+            default: iv.setImageResource(R.drawable.ic_green_circle);
+        }
+    }
+
+    private void setFavouriteIcon(ImageView iv, boolean isFavourite){
+        if(!isFavourite){
+            iv.setImageResource(R.drawable.icon_add_to_favourites40);
+        }
+        else
+            iv.setImageResource(R.drawable.icon_favourited40);
     }
 
     private void blinkStateIVState(ImageView ivState, int colorState){
