@@ -13,6 +13,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Intent intent = new Intent(this, RealTimeService.class);
-        //startService(intent);
+        startService(intent);
     }
 }

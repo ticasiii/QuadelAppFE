@@ -46,6 +46,15 @@
 
         </com.github.mikephil.charting.charts.LineChart>
 
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bar_chart"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_below="@id/iv_chart"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="16dp" />
+
+
 
         <TextView
             android:id="@+id/tv_chart_description"

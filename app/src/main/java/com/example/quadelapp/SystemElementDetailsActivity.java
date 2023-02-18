@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -25,9 +26,13 @@ import com.example.quadelapp.Models.SystemElement;
 import com.example.quadelapp.Models.TimeSeriesData;
 import com.example.quadelapp.databinding.ActivitySystemElementDetailsBinding;
 import com.example.quadelapp.services.RedisService;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -63,6 +68,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
     private Map<String, Picture> pictures;
     private ImageView ivCover, ivState;
     private LineChart ivChart;
+    private BarChart barChart;
     private TextView tvDesc, tvDescChart;
     private Toolbar toolbar;
     private CollapsingToolbarLayout toolBarLayout;
@@ -86,6 +92,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         tvDesc = binding.getRoot().findViewById(R.id.tv_description);
         tvDescChart = binding.getRoot().findViewById(R.id.tv_chart_description);
         ivChart = binding.getRoot().findViewById(R.id.iv_chart);
+        barChart = binding.getRoot().findViewById(R.id.bar_chart);
         ivState = binding.getRoot().findViewById(R.id.ivState);
 
         ActionBar actionBar = getSupportActionBar();
@@ -167,6 +174,9 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         tvDescChart.setText("Description of chart");
         setStateIcon(cp.getState());
         getHarcodedDataForChart();
+        getHarcodedDataForBarChart();
+
+        //getDataForChart();
     }
     private void setStateIcon(String state){
         if(Objects.equals(state, "ALARM")){
@@ -222,6 +232,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         tvDescChart.setText("Description of chart");
         setStateIcon(e.getState());
         getHarcodedDataForChart();
+        getHarcodedDataForBarChart();
     }
     private void changeFromCodeToWordState(SystemElement el){
 
@@ -246,8 +257,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<List<TimeSeriesData>> call, Response<List<TimeSeriesData>> response) {
                 if (response.isSuccessful()) {
                     List<TimeSeriesData> data = response.body();
-                    // Do something with the data, for example, show it in a chart
-                    showDataInChart(data);
+                    showDataInBarChart(data);
                 } else {
                     showToastMessaggeShort("Response body for TimeSeriesData is NULL!");
                 }
@@ -258,6 +268,102 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void getHarcodedDataForBarChart(){
+
+        List<TimeSeriesData>data = new ArrayList<>();
+        //make some static data
+        TimeSeriesData tsdRecord = new TimeSeriesData(1318948745000L, "2145");
+        data.add(tsdRecord);
+        //tsdRecord = new TimeSeriesData(Long.parseLong("1643673600000"), "1");
+        tsdRecord = new TimeSeriesData(1350571145000L, "4210");
+        data.add(tsdRecord);
+        tsdRecord = new TimeSeriesData(Long.parseLong("1660833545000"), "2");
+        data.add(tsdRecord);
+        tsdRecord = new TimeSeriesData(Long.parseLong("1663511945000"), "2");
+        data.add(tsdRecord);
+        tsdRecord = new TimeSeriesData(Long.parseLong("1666103945000"), "1");
+        data.add(tsdRecord);
+
+        showDataInBarChart(data);
+    }
+
+    private void showDataInBarChart(List<TimeSeriesData> timeSeriesDataList){
+        //BarChart chart = findViewById(R.id.bar_chart);
+
+        List<BarEntry> entries = new ArrayList<>();
+
+        for (int i = 0; i < timeSeriesDataList.size(); i++) {
+            TimeSeriesData data = timeSeriesDataList.get(i);
+            float value = Float.parseFloat(data.getValue());
+            entries.add(new BarEntry(i, value));
+        }
+
+        BarDataSet dataSet = new BarDataSet(entries, "Monthly number of ALARMS");
+        //dataSet.setColor(Color.BLUE);
+        dataSet.setDrawValues(true);
+        dataSet.setBarBorderWidth(1f);
+        dataSet.setBarBorderColor(Color.BLACK);
+
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.format(Locale.getDefault(), "%.0f", value);
+            }
+        });
+
+        dataSet.setValueTextSize(10f);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getBarLabel(BarEntry barEntry) {
+                return String.format(Locale.getDefault(), "%.0f", barEntry.getY());
+            }
+        });
+
+        BarData barData = new BarData(dataSet);
+        barChart.setData(barData);
+        barChart.setDrawGridBackground(false);
+        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        barChart.getXAxis().setGranularity(1f);
+        barChart.getXAxis().setLabelCount(timeSeriesDataList.size());
+        barChart.getXAxis().setDrawLabels(true);
+        barChart.setBackgroundColor(Color.YELLOW);
+
+
+        barChart.getXAxis().setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int index = (int) value;
+                if (index >= 0 && index < timeSeriesDataList.size()) {
+                    long timestamp = timeSeriesDataList.get(index).getTimestamp();
+                    return getMonthYearFromUnixTimestamp(timestamp);
+                } else {
+                    return "";
+                }
+            }
+        });
+        barChart.getXAxis().setDrawGridLines(false);
+        barChart.getXAxis().setDrawAxisLine(true);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawAxisLine(true);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawAxisLine(true);
+        barChart.getDescription().setEnabled(false);
+        barChart.setTouchEnabled(false);
+        barChart.setDragEnabled(false);
+        barChart.setScaleEnabled(false);
+        barChart.setDoubleTapToZoomEnabled(false);
+        barChart.invalidate();
+    }
+
+    public static String getMonthYearFromUnixTimestamp(long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
+        Date date = new Date(timestamp*1000*3600);
+        return sdf.format(date);
+    }
+
     private void showDataInChart(List<TimeSeriesData> data) {
         LineChart chart = findViewById(R.id.iv_chart);
         List<Entry> entries = new ArrayList<>();

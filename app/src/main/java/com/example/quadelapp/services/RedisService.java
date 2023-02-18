@@ -70,12 +70,12 @@ public interface RedisService {
 
     @PUT("controlpanel/{id}")
     Call<ControlPanel> updateControlPanel(@Path("id")  String id, @Body ControlPanel cp);
-
-
+    @GET("picture/allAlertedSortedByState")
+    Call<List<Picture>> getAlertedPictures();
+    @GET("picture/fromFavoriteList")
+    Call<List<Picture>> getFavoritePictures(@Body List<String> arrayIds);
     @GET("picture/bySearch/{queryText}")
     Call<List<Picture>> getFilteredPictures(@Path("queryText")  String queryText);
-
-
     @GET("controlpanels/id/{id}")
     Call<List<TimeSeriesData>> getTimeSeriesDataById(@Path("id") String id);
     @GET("picture/allSystemElements")
@@ -91,14 +91,6 @@ public interface RedisService {
 
     @GET("picture/all")
     Call<List<Picture>> getAllPictures();
-
-    @GET("picture/allAlertedSortedByState")
-    Call<List<Picture>> getAlertedPictures();
-
-
-    @GET("picture/fromFavoriteList")
-    Call<List<Picture>> getFavoritePictures(@Body List<String> arrayIds);
-
     @GET("picture/favoritesAndAlerts/{arrayIds}")
     Call<List<Picture>> getFavoritesAndAlertPictures(@Path("arrayIds") ArrayList<String> arrayIds);
 
