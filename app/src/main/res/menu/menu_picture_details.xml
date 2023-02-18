@@ -7,11 +7,5 @@
         android:orderInCategory="100"
         android:icon="@drawable/icon_add_to_favourites30"
         android:title="@string/action_favourites"
-        app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_state"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_green_circle"
-        android:title="@string/action_favourites"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 </menu>

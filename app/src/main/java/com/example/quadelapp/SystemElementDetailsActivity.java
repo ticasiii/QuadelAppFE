@@ -58,48 +58,27 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import com.github.mikephil.charting.charts.LineChart;
 
 public class SystemElementDetailsActivity extends AppCompatActivity {
-
     private String elementId, elementType;
     private RedisService redisService;
-
     private Map<String, Picture> pictures;
-
-    private ImageView ivCover;
+    private ImageView ivCover, ivState;
     private LineChart ivChart;
-    private MenuItem stateItem;
     private TextView tvDesc, tvDescChart;
     private Toolbar toolbar;
     private CollapsingToolbarLayout toolBarLayout;
-    private String ts1String;
-    private long ts1Long;
     private Map<Float, String> valueMap = new HashMap<>();
-    private List<String> xLabels = new ArrayList<>();
-
-
-
     private ActivitySystemElementDetailsBinding binding;
-
-
     public class StringValueFormatter extends ValueFormatter {
         private Map<Float, String> valueMap;
-
         public StringValueFormatter(Map<Float, String> valueMap) {
             this.valueMap = valueMap;
         }
-
-        @Override
-        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-            return valueMap.get(value);
-        }
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivitySystemElementDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
         toolBarLayout = binding.toolbarLayout;
@@ -107,129 +86,56 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         tvDesc = binding.getRoot().findViewById(R.id.tv_description);
         tvDescChart = binding.getRoot().findViewById(R.id.tv_chart_description);
         ivChart = binding.getRoot().findViewById(R.id.iv_chart);
-        //ImageView fab = binding.fab;
+        ivState = binding.getRoot().findViewById(R.id.ivState);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
+        setValueMap();
         elementId = getIntent().getStringExtra("elementId");
         elementType = getIntent().getStringExtra("elementType");
-
-        if(elementType == "cp"){
-            getControlPanelFromRedisAndFillData(elementId);
-        }
-        else{
-            getElementFromRedisAndFillData(elementId);
-        }
-
-        valueMap.put(1.0f, "OK");
-        valueMap.put(2.0f, "OFF");
-        valueMap.put(3.0f, "FAULT");
-        valueMap.put(4.0f, "ALARM");
-
+        getSystemElementFromRedisAndFillData(elementType, elementId);
         //getDataForChart();
-
-
     }
-
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.system_element_details_menu, menu);
-        stateItem = menu.findItem(R.id.action_state);
-//        stateItem.setIcon(R.drawable.rounded_corner_shape);
-//        stateItem.setIcon(R.drawable.rounded_corner_shape_red);
-
-
-
-//        if(isFavouritedInPreferences(pictureId)){
-//            favouritesItem.setIcon(R.drawable.icon_favourited40);
-//        }
-//        else{
-//            favouritesItem.setIcon(R.drawable.icon_add_to_favourites40);
-//        }
-
-
-        return true;
-    }
-
-//    private void setToolbarColorBasedOnState(CollapsingToolbarLayout toolBarLayout, String state){
-//        int color;
-//        if(Objects.equals(state, "ALARM")){
-//            color = Color.RED;
-//        }
-//        else if(Objects.equals(state, "ERROR"))
-//        {
-//            color = Color.YELLOW;
-//        } else if (Objects.equals(state, "OFF")) {
-//            color = Color.GRAY;
-//        }
-//        else {
-//            color = Color.GREEN;
-//        }
-//        toolBarLayout.setContentScrimColor(color);
-//        // adding the color to be shown
-//        ObjectAnimator animator1 = ObjectAnimator.ofInt(toolBarLayout, "backgroundColor", color, Color.WHITE, color);
-//        setAnimator(animator1);
-//
-//        ObjectAnimator animator2 = ObjectAnimator.ofInt(toolBarLayout, "contentScrimColor", color, Color.WHITE, color);
-//        setAnimator(animator2);
-//
+//    @Override
+//    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.system_element_details_menu, menu);
+//        stateItem = menu.findItem(R.id.action_state);
+//        return true;
 //    }
-    private void setAnimator(ObjectAnimator animator){
-
-        // duration of one color
-        animator.setDuration(800);
-        animator.setEvaluator(new ArgbEvaluator());
-
-        // color will be show in reverse manner
-        animator.setRepeatCount(Animation.REVERSE);
-
-        // It will be repeated up to infinite time
-        animator.setRepeatCount(Animation.INFINITE);
-        animator.start();
+    private void setValueMap(){
+        valueMap.put(1.0f, "OK");
+        valueMap.put(2.0f, "OFF");
+        valueMap.put(3.0f, "FAULT");
+        valueMap.put(4.0f, "ALARM");
     }
-    private void getControlPanelFromRedisAndFillData(String controlPanelId){
-
-
+    private void getSystemElementFromRedisAndFillData(String elementType, String elementId){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         redisService = retrofit.create(RedisService.class);
-
-
+        if(elementType == "cp")
+            getControlPanelFromRedisAndFillData(redisService, elementId);
+        else
+            getElementFromRedisAndFillData(redisService, elementId);
+    }
+    private void getControlPanelFromRedisAndFillData(RedisService redisService, String controlPanelId){
         Call<ControlPanel> call = redisService.getControlPanelById(controlPanelId);
-
         call.enqueue(new Callback<ControlPanel>() {
             @Override
             public void onResponse(@NonNull Call<ControlPanel> call, @NonNull Response<ControlPanel> response) {
-
-                if(response.body() != null){
-                    ControlPanel cp = new ControlPanel(controlPanelId);
-
-                    cp.setTitle(response.body().getTitle());
-                    cp.setDescription(response.body().getDescription());
-                    cp.setState(response.body().getState());
-                    changeFromCodeToWordState(cp);
-                    cp.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
-                    //cp.setElementImage(getResources().getIdentifier(cp.getTitle(), "drawable", ControlPanelDetailsActivity.this.getPackageName()));
-
-
-
-                    setFields(cp);
-                }
-                else{
+                if(response.body() != null)
+                    getControlPanelDataFromResponse(response, controlPanelId);
+                else
                     showToastMessaggeShort("Response body for CONTROLPANEL is NULL!");
-                }
             }
             @Override
             public void onFailure(Call<ControlPanel> call, Throwable t) {
@@ -237,59 +143,55 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
             }
         });
     }
+    private void getControlPanelDataFromResponse(Response<ControlPanel> response, String controlPanelId){
+        ControlPanel cp = new ControlPanel(controlPanelId);
+        cp.setTitle(response.body().getTitle());
+        cp.setDescription(response.body().getDescription());
+        cp.setState(response.body().getState());
+        changeFromCodeToWordState(cp);
+        cp.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
+        //cp.setElementImage(getResources().getIdentifier(cp.getTitle(), "drawable", ControlPanelDetailsActivity.this.getPackageName()));
+        setFields(cp);
+    }
 
     private void setFields(ControlPanel cp){
         toolBarLayout.setTitle(cp.getTitle());
         Drawable nav = toolbar.getNavigationIcon();
         if(nav != null) {
-            nav.setTint(getResources().getColor(R.color.black));
-        }        toolBarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.black));
-        toolBarLayout.setCollapsedTitleTextColor(getResources().getColor(android.R.color.black));
-
-        //setToolbarColorBasedOnState(toolBarLayout, cp.getState());
-        setMenuItemColorBasedOnState(cp.getState());
-
+            nav.setTint(getResources().getColor(R.color.secondaryColor));
+        }
+        toolBarLayout.setExpandedTitleColor(getResources().getColor(R.color.secondaryColor));
+        toolBarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.secondaryColor));
         ivCover.setImageResource(cp.getElementImage());
         tvDesc.setText(cp.getDescription());
         tvDescChart.setText("Description of chart");
+        setStateIcon(cp.getState());
         getHarcodedDataForChart();
-
-        //ivChart.setImageResource(cp.getElementImage());
-
+    }
+    private void setStateIcon(String state){
+        if(Objects.equals(state, "ALARM")){
+            ivState.setImageResource(R.drawable.ic_red_circle);
+        }
+        else if(Objects.equals(state, "FAULT")){
+            ivState.setImageResource(R.drawable.ic_yellow_circle);
+        }
+        else if(Objects.equals(state, "OFF")){
+            ivState.setImageResource(R.drawable.ic_grey_circle);
+        }
+        else if(Objects.equals(state, "OK")){
+            ivState.setImageResource(R.drawable.ic_green_circle);
+        }
     }
 
-    private void getElementFromRedisAndFillData(String elementId){
-
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        redisService = retrofit.create(RedisService.class);
-
-
+    private void getElementFromRedisAndFillData(RedisService redisService, String elementId){
         Call<Element> call = redisService.getElementById(elementId);
-
         call.enqueue(new Callback<Element>() {
             @Override
             public void onResponse(@NonNull Call<Element> call, @NonNull Response<Element> response) {
-
-                if(response.body() != null){
-                    Element e = new Element(elementId);
-
-                    e.setTitle(response.body().getTitle());
-                    e.setDescription(response.body().getDescription());
-                    e.setState(response.body().getState());
-                    changeFromCodeToWordState(e);
-                    e.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
-                    //cp.setElementImage(getResources().getIdentifier(cp.getTitle(), "drawable", ControlPanelDetailsActivity.this.getPackageName()));
-
-
-                    setFields(e);
-                }
-                else{
+                if(response.body() != null)
+                    getElementDataFromResponse(response, elementId);
+                else
                     showToastMessaggeShort("Response body for ELEMENT is NULL!");
-                }
             }
             @Override
             public void onFailure(Call<Element> call, Throwable t) {
@@ -297,68 +199,48 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
             }
         });
     }
+    private void getElementDataFromResponse(Response<Element> response, String elementId){
+        Element e = new Element(elementId);
+        e.setTitle(response.body().getTitle());
+        e.setDescription(response.body().getDescription());
+        e.setState(response.body().getState());
+        changeFromCodeToWordState(e);
+        e.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
+        setFields(e);
+    }
 
     private void setFields(Element e){
         toolBarLayout.setTitle(e.getTitle());
         Drawable nav = toolbar.getNavigationIcon();
         if(nav != null) {
-            nav.setTint(getResources().getColor(R.color.black));
-        }        toolBarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.black));
-        toolBarLayout.setCollapsedTitleTextColor(getResources().getColor(android.R.color.black));
-
-        //setToolbarColorBasedOnState(toolBarLayout, e.getState());
-        setMenuItemColorBasedOnState(e.getState());
-
-
+            nav.setTint(getResources().getColor(R.color.secondaryColor));
+        }
+        toolBarLayout.setExpandedTitleColor(getResources().getColor(R.color.secondaryColor));
+        toolBarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.secondaryColor));
         ivCover.setImageResource(e.getElementImage());
         tvDesc.setText(e.getDescription());
         tvDescChart.setText("Description of chart");
+        setStateIcon(e.getState());
         getHarcodedDataForChart();
-
-        //ivChart.setImageResource(e.getElementImage());
-
     }
-
     private void changeFromCodeToWordState(SystemElement el){
 
-        switch (el.getState()){
-            case "1":
-                el.setState("OK");
-            case "2":
-                el.setState("OFF");
-            case "3":
-                el.setState("FAULT");
-            case "4":
-                el.setState("ALARM");
-            default:
-                el.setState("OK");
-        }
-
+        if(Objects.equals(el.getState(), "4"))
+            el.setState("ALARM");
+        else if (Objects.equals(el.getState(), "2"))
+            el.setState("OFF");
+        else if (Objects.equals(el.getState(), "3"))
+            el.setState("FAULT");
+        else
+            el.setState("OK");
     }
-    private void setMenuItemColorBasedOnState(String state){
-        if(Objects.equals(state, "ALARM")){
-            stateItem.setIcon(R.drawable.ic_red_circle);
-        }
-        else if(Objects.equals(state, "OK")){
-            stateItem.setIcon(R.drawable.ic_green_circle);
-        }
-        else if(Objects.equals(state, "FAULT")){
-            stateItem.setIcon(R.drawable.ic_yellow_circle);
-        }
-        else if(Objects.equals(state, "OFF")){
-            stateItem.setIcon(R.drawable.ic_grey_circle);
-        }
-    }
-
     private void getDataForChart(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         redisService = retrofit.create(RedisService.class);
-
         Call<List<TimeSeriesData>> call = redisService.getTimeSeriesDataById(elementId);
-
         call.enqueue(new Callback<List<TimeSeriesData>>() {
             @Override
             public void onResponse(Call<List<TimeSeriesData>> call, Response<List<TimeSeriesData>> response) {
@@ -370,66 +252,50 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
                     showToastMessaggeShort("Response body for TimeSeriesData is NULL!");
                 }
             }
-
             @Override
             public void onFailure(Call<List<TimeSeriesData>> call, Throwable t) {
                 showToastMessaggeShort("Something went wrong with retrieving TimeSeriesData from DB!");
             }
         });
-
     }
-
     private void showDataInChart(List<TimeSeriesData> data) {
         LineChart chart = findViewById(R.id.iv_chart);
-
         List<Entry> entries = new ArrayList<>();
         for (TimeSeriesData timeSeriesData : data) {
             entries.add(new Entry(timeSeriesData.getTimestamp(), Float.parseFloat(timeSeriesData.getValue())));
         }
-//        xLabels.add(String.valueOf(entries.get(0).getX()));
-//
-//        xLabels.add(String.valueOf(entries.get(entries.size()-1).getX()));
-
-
         LineDataSet dataSet = new LineDataSet(entries, "Element Data");
-        dataSet.setColor(Color.RED);
-        dataSet.setValueTextColor(Color.BLACK);
-        dataSet.setDrawValues(true);
-
-        dataSet.setValueFormatter(new StringValueFormatter(valueMap));
-        //dataSet.value
+        setDataSet(dataSet);
         setNamesOfAxiss(chart);
-
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
         chart.invalidate();
-
     }
 
+    private void setDataSet(LineDataSet dataSet){
+        dataSet.setColor(Color.RED);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setDrawValues(true);
+        dataSet.setValueFormatter(new StringValueFormatter(valueMap));
 
-
+    }
     private void getHarcodedDataForChart(){
 
         List<TimeSeriesData>data = new ArrayList<>();
         //make some static data
-        TimeSeriesData tsd = new TimeSeriesData(1640995200000L, "1");
-        data.add(tsd);
-        tsd = new TimeSeriesData(Long.parseLong("1643673600000"), "1");
-        data.add(tsd);
-        tsd = new TimeSeriesData(Long.parseLong("1646092800000"), "2");
-        data.add(tsd);
-        tsd = new TimeSeriesData(Long.parseLong("1648771200000"), "2");
-        data.add(tsd);
-        tsd = new TimeSeriesData(Long.parseLong("1651363200000"), "1");
-        data.add(tsd);
-//        tsd = new TimeSeriesData(1643065200, "4");
-//        data.add(tsd);
-//        tsd = new TimeSeriesData(1643151600, "4");
-//        data.add(tsd);
-//        tsd = new TimeSeriesData(1643238000, "1");
-        data.add(tsd);
-//        tsd = new TimeSeriesData(1643151600, "1");
-//        data.add(tsd);
+        TimeSeriesData tsdRecord = new TimeSeriesData(1640995200000L, "1");
+        data.add(tsdRecord);
+        //tsdRecord = new TimeSeriesData(Long.parseLong("1643673600000"), "1");
+        tsdRecord = new TimeSeriesData(1643673600000L, "1");
+
+        data.add(tsdRecord);
+        tsdRecord = new TimeSeriesData(Long.parseLong("1646092800000"), "2");
+        data.add(tsdRecord);
+        tsdRecord = new TimeSeriesData(Long.parseLong("1648771200000"), "2");
+        data.add(tsdRecord);
+        tsdRecord = new TimeSeriesData(Long.parseLong("1651363200000"), "1");
+        data.add(tsdRecord);
+        data.add(tsdRecord);
 
         showDataInChart(data);
     }
@@ -478,11 +344,13 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
     }
 
     private String ConvertFloatValueToStringValue(float value){
-        if(value==1)
+        if(value==1) {
             return "OK";
+        }
         else if (value==2) {
             return "OFF";
-        } else if (value==3) {
+        }
+        else if (value==3) {
             return "FAULT";
         }
         else

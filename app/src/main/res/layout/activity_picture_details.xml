@@ -6,15 +6,12 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".PictureDetailsActivity">
-
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:fitsSystemWindows="true"
         android:theme="@style/Theme.QuadelApp.AppBarOverlay">
-
-
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
@@ -30,37 +27,18 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/Theme.QuadelApp.PopupOverlay" />
-
-
-
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
-
     <include layout="@layout/content_scrolling" />
-
-
-    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:src="@drawable/icon_add_to_favourites40"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"
-        app:backgroundTint="@color/white"
-        android:contentDescription="TODO"
-        />
-
     <ImageView
-        android:id="@+id/fab"
+        android:id="@+id/ivState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon_add_to_favourites80"
+        android:paddingTop="60dp"
+        android:src="@drawable/ic_green_circle"
         android:layout_marginEnd="@dimen/fab_margin"
         android:contentDescription="TODO"
         app:layout_anchor="@id/app_bar"
-        android:layout_gravity="bottom"
-        app:layout_anchorGravity="bottom|end"
-        ></ImageView>-->
-
+        android:layout_gravity="center"
+        app:layout_anchorGravity="bottom|end" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

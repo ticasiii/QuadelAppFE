@@ -7,12 +7,27 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="picture_title">#4C4C4C</color>
+    <color name="picture_title">#414141</color>
     <color name="cardview_green_background">#00FF00</color>
     <color name="color_alarm">#FF0000</color>
     <color name="color_off">#666666</color>
     <color name="color_fault">#FFAA00</color>
     <color name="color_ok">#00FF00</color>
+    <color name="grey">#000000</color>
+    <color name="greyDark">#303030</color>
+    <color name="greyLight">#A0A0A0</color>
+    <color name="color_yellow">#FFAA00</color>
+
+    <color name="primaryColor">#212121</color>
+    <color name="primaryLightColor">#484848</color>
+    <color name="primaryDarkColor">#000000</color>
+    <color name="secondaryColor">#ffc107</color>
+    <color name="secondaryLightColor">#fff350</color>
+    <color name="secondaryDarkColor">#c79100</color>
+    <color name="primaryTextColor">#ffc107</color>
+    <color name="secondaryTextColor">#212121</color>
+
+
 
 
 
