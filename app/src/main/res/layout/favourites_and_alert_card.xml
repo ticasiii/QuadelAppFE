@@ -19,14 +19,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/cover"
+            <RelativeLayout
+                android:id="@+id/rlAlarm"
                 android:layout_width="match_parent"
                 android:layout_height="125dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:contentDescription="@string/todo"
-                android:scaleType="fitXY" />
+                android:background="@color/greyLight">
+
+                <ImageView
+                    android:id="@+id/cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="125dp"
+                    android:layout_margin="5dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:contentDescription="@string/todo"
+                    android:scaleType="fitXY" />
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/ivState"
@@ -35,7 +43,7 @@
                 android:layout_marginStart="-45dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="40dp"
-                android:layout_toEndOf="@id/cover"
+                android:layout_toEndOf="@id/rlAlarm"
                 android:scaleType="centerCrop" />
 
 
@@ -43,7 +51,7 @@
                 android:id="@+id/statecolor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/cover">
+                android:layout_below="@id/rlAlarm">
 
             <TextView
                 android:id="@+id/title"

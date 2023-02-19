@@ -76,8 +76,8 @@ public interface RedisService {
     Call<List<Picture>> getFavoritePictures(@Body List<String> arrayIds);
     @GET("picture/bySearch/{queryText}")
     Call<List<Picture>> getFilteredPictures(@Path("queryText")  String queryText);
-    @GET("controlpanels/id/{id}")
-    Call<List<TimeSeriesData>> getTimeSeriesDataById(@Path("id") String id);
+    @GET("controlpanels/timeseries/numberOfAlarmsOfElement/{elementId}")
+    Call<List<TimeSeriesData>> getTimeSeriesDataById(@Path("elementId") String elementId);
     @GET("picture/allSystemElements")
     Call<List<SystemElement>> getAllSystemElements();
     @GET("controlpanel/{id}")

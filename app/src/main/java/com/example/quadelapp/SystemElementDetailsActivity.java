@@ -129,10 +129,16 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         redisService = retrofit.create(RedisService.class);
-        if(elementType == "cp")
+        if(elementType == "cp") {
             getControlPanelFromRedisAndFillData(redisService, elementId);
-        else
+            getDataForChart(redisService, elementId);
+        }
+
+        else {
             getElementFromRedisAndFillData(redisService, elementId);
+            getDataForChart(redisService, elementId);
+
+        }
     }
     private void getControlPanelFromRedisAndFillData(RedisService redisService, String controlPanelId){
         Call<ControlPanel> call = redisService.getControlPanelById(controlPanelId);
@@ -173,10 +179,9 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         tvDesc.setText(cp.getDescription());
         tvDescChart.setText("Description of chart");
         setStateIcon(cp.getState());
-        getHarcodedDataForChart();
-        getHarcodedDataForBarChart();
+        //getHarcodedDataForChart();
+        //getHarcodedDataForBarChart();
 
-        //getDataForChart();
     }
     private void setStateIcon(String state){
         if(Objects.equals(state, "ALARM")){
@@ -231,8 +236,9 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         tvDesc.setText(e.getDescription());
         tvDescChart.setText("Description of chart");
         setStateIcon(e.getState());
-        getHarcodedDataForChart();
-        getHarcodedDataForBarChart();
+        //getHarcodedDataForChart();
+        //getHarcodedDataForBarChart();
+        //getDataForChart(redisService, elementId);
     }
     private void changeFromCodeToWordState(SystemElement el){
 
@@ -245,12 +251,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         else
             el.setState("OK");
     }
-    private void getDataForChart(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        redisService = retrofit.create(RedisService.class);
+    private void getDataForChart(RedisService redisService, String elementId){
         Call<List<TimeSeriesData>> call = redisService.getTimeSeriesDataById(elementId);
         call.enqueue(new Callback<List<TimeSeriesData>>() {
             @Override

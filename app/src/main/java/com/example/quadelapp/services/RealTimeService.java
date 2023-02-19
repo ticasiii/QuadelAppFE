@@ -23,6 +23,7 @@ import com.example.quadelapp.SystemElementsFragment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -170,33 +171,26 @@ public class RealTimeService extends Service {
         return favoriteIdsList;
     }
 
-    private void changeFromCodeToWordState(Picture pic){
-        switch (pic.getState()){
-            case "1":
-                pic.setState("OK");
-            case "2":
-                pic.setState("OFF");
-            case "3":
-                pic.setState("ERROR");
-            case "4":
-                pic.setState("ALARM");
-            default:
-                pic.setState("OK");
+    private void changeFromCodeToWordState(Picture pic) {
+        if (Objects.equals(pic.getState(), "4")) {
+            pic.setState("ALARM");
+        } else if (Objects.equals(pic.getState(), "3")) {
+            pic.setState("FAULT");
+        } else if (Objects.equals(pic.getState(), "2")) {
+            pic.setState("OFF");
+        } else if (Objects.equals(pic.getState(), "1")) {
+            pic.setState("OK");
         }
     }
-
-    private void changeFromCodeToWordState(SystemElement systemElement){
-        switch (systemElement.getState()){
-            case "1":
-                systemElement.setState("OK");
-            case "2":
-                systemElement.setState("OFF");
-            case "3":
-                systemElement.setState("ERROR");
-            case "4":
-                systemElement.setState("ALARM");
-            default:
-                systemElement.setState("OK");
+    private void changeFromCodeToWordState(SystemElement systemElement) {
+        if (Objects.equals(systemElement.getState(), "4")) {
+            systemElement.setState("ALARM");
+        } else if (Objects.equals(systemElement.getState(), "3")) {
+            systemElement.setState("FAULT");
+        } else if (Objects.equals(systemElement.getState(), "2")) {
+            systemElement.setState("OFF");
+        } else if (Objects.equals(systemElement.getState(), "1")) {
+            systemElement.setState("OK");
         }
     }
 

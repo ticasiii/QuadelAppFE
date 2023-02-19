@@ -28,18 +28,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAndAlertAdapter.MyViewHolder> {
-
     private final Fragment mContext;
     private List<Picture> favoritesPictures;
     public List<Picture> pictures;
 
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, description, state;
         public ImageView cover, overflow, ivState;
-        public RelativeLayout stateColor;
+        public RelativeLayout stateColor, rlAlarm;
 
         public MyViewHolder(View view) {
             super(view);
@@ -50,6 +49,7 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
             stateColor = view.findViewById(R.id.statecolor);
             state = view.findViewById(R.id.state);
             ivState = view.findViewById(R.id.ivState);
+            rlAlarm = view.findViewById(R.id.rlAlarm);
         }
     }
     public FavouritesAndAlertAdapter(Fragment mContext, List<Picture> pics) {
@@ -57,7 +57,6 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         this.pictures = pics;
         notifyDataSetChanged();
     }
-
     @Override
     public FavouritesAndAlertAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -75,7 +74,6 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         });
         return myViewHolder;
     }
-
     @Override
     public void onBindViewHolder(final FavouritesAndAlertAdapter.MyViewHolder holder, int position) {
         Picture picture = pictures.get(position);
@@ -86,44 +84,7 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         setStateIcon(holder.ivState, picture.getState());
         setIfFavouritedFromPreferences(picture);
         setFavouriteIcon(holder.overflow, picture.isFavourite());
-
-
-        //blinkStateIVState(holder.ivState, setColorByState(picture.getState()));
-//        if(picture.getState() == "ALARM"){
-//            //holder.stateColor.setBackgroundColor(0xFFFF0000);
-//            holder.ivState.setBackgroundColor(Color.RED);
-//
-//            // adding the color to be shown
-//            ObjectAnimator animator = ObjectAnimator.ofInt(holder.stateColor, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
-//
-//            // duration of one color
-//            animator.setDuration(2000);
-//            animator.setEvaluator(new ArgbEvaluator());
-//
-//            // color will be show in reverse manner
-//            animator.setRepeatCount(Animation.REVERSE);
-//
-//            // It will be repeated up to infinite time
-//            animator.setRepeatCount(Animation.INFINITE);
-//            animator.start();
-//
-//
-//        }
-//        else if(picture.getState() == "OFF"){
-//            holder.ivState.setBackgroundColor(Color.GRAY);
-//
-//        }
-//        else if(picture.getState() == "FAULT"){
-//            //holder.stateColor.setBackgroundColor(0xFFA020F0);
-//            holder.ivState.setBackgroundColor(Color.YELLOW);
-//
-//        }
-//        else {
-//            //holder.stateColor.setBackgroundColor(Color.GREEN);
-//            holder.ivState.setBackgroundColor(Color.YELLOW);
-//
-//        }
-
+        setAlarmFrame(holder.rlAlarm, picture.getState());
 
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,60 +93,61 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
                 if(!picture.isFavourite()){
                     addPictureToFavourites(picture);
                     FavouritesAndAlertFragment.fullListPictures.add(picture);
-
-                    //FavouritesAndAlertFragment.adapter.notifyItemInserted(FavouritesAndAlertFragment.fullListPictures.size()-1);
                     holder.overflow.setImageResource(R.drawable.icon_favourited40);
 
                 }
                 else{
                     removePictureFromFavourites(picture);
                     FavouritesAndAlertFragment.fullListPictures.remove(picture);
-
-                    //FavouritesAndAlertFragment.adapter.notifyDataSetChanged();
                     holder.overflow.setImageResource(R.drawable.icon_add_to_favourites40);
                 }
-
             }
         });
-
-
-//        holder.overflow.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                showPopupMenu(holder.overflow);
-//            }
-//        });
     }
 
-    public int setColorByState(String state){
-        int colorState;
+    public void setAlarmFrame(RelativeLayout rlAlarm, String state){
+        if(Objects.equals(state, "ALARM")){
+            rlAlarm.setBackgroundColor(Color.RED);
+            ObjectAnimator animator = ObjectAnimator.ofInt(rlAlarm, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
 
-        switch (state){
-            case "ALARM":
-                colorState = Color.RED;
-            case "FAULT":
-                colorState = Color.YELLOW;
-            case "OFF":
-                colorState = Color.GRAY;
-            case "OK":
-                colorState = Color.GREEN;
-            default:colorState = Color.GREEN;
+            // duration of one color
+            animator.setDuration(500);
+            animator.setEvaluator(new ArgbEvaluator());
+
+            // color will be show in reverse manner
+            animator.setRepeatCount(Animation.REVERSE);
+
+            // It will be repeated up to infinite time
+            animator.setRepeatCount(Animation.INFINITE);
+            animator.start();
         }
-        return colorState;
-
     }
+//    public int setColorByState(String state){
+//        int colorState;
+//
+//        switch (state){
+//            case "ALARM":
+//                colorState = Color.RED;
+//            case "FAULT":
+//                colorState = Color.YELLOW;
+//            case "OFF":
+//                colorState = Color.GRAY;
+//            case "OK":
+//                colorState = Color.GREEN;
+//            default:colorState = Color.GREEN;
+//        }
+//        return colorState;
+//    }
 
     public void setStateIcon(ImageView iv, String state){
-        switch (state){
-            case "ALARM":
-                iv.setImageResource(R.drawable.ic_red_circle);
-            case "FAULT":
-                iv.setImageResource(R.drawable.ic_yellow_circle);
-            case "OFF":
-                iv.setImageResource(R.drawable.ic_grey_circle);
-            case "OK":
-                iv.setImageResource(R.drawable.ic_green_circle);
-            default: iv.setImageResource(R.drawable.ic_green_circle);
+        if(Objects.equals(state, "ALARM")) {
+            iv.setImageResource(R.drawable.ic_red_circle);
+        } else if (Objects.equals(state, "FAULT")) {
+            iv.setImageResource(R.drawable.ic_yellow_circle);
+        } else if (Objects.equals(state, "OFF")) {
+            iv.setImageResource(R.drawable.ic_grey_circle);
+        } else if (Objects.equals(state, "OK")) {
+            iv.setImageResource(R.drawable.ic_green_circle);
         }
     }
 
@@ -196,94 +158,10 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         else
             iv.setImageResource(R.drawable.icon_favourited40);
     }
-
-    private void blinkStateIVState(ImageView ivState, int colorState){
-        //holder.ivState.setBackgroundColor(colorState);
-
-        // adding the color to be shown
-        ObjectAnimator animator = ObjectAnimator.ofArgb(ivState, "backgroundColor", colorState, Color.WHITE, colorState);
-
-        // duration of one color
-        animator.setDuration(2000);
-        animator.setEvaluator(new ArgbEvaluator());
-
-        // color will be show in reverse manner
-        animator.setRepeatCount(Animation.REVERSE);
-
-        // It will be repeated up to infinite time
-        animator.setRepeatCount(Animation.INFINITE);
-        animator.start();
-    }
-
-    /**
-     * Showing popup menu when tapping on 3 dots
-     */
-    private void showPopupMenu(View view) {
-        // inflate menu
-        PopupMenu popup = new PopupMenu(mContext.getContext(), view);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.favourites_menu, popup.getMenu());
-        popup.setOnMenuItemClickListener(new FavouritesAndAlertAdapter.MyMenuItemClickListener());
-        popup.show();
-    }
-
-    /**
-     * Click listener for popup menu items
-     */
-    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
-
-        public MyMenuItemClickListener() {
-        }
-
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.action_add_favourite:
-                    Toast.makeText(mContext.getContext(), "Remove from favourite", Toast.LENGTH_SHORT).show();
-                    return true;
-                /*case R.id.action_play_next:
-                    Toast.makeText(mContext.getContext(), "Play next", Toast.LENGTH_SHORT).show();
-                    return true;*/
-                default:
-            }
-            return false;
-        }
-    }
     @Override
     public int getItemCount() {
         return pictures.size();
     }
-
-    public void filterInAndroid(String charText) {
-        charText = charText.toLowerCase(Locale.getDefault());
-        List<Picture> fullListPictures = new ArrayList<>();
-        fullListPictures.addAll(pictures);
-        pictures.clear();
-        if (charText.length() < 2) {
-            pictures.addAll(fullListPictures);
-        } else {
-            String filterPattern = charText.toLowerCase().trim();
-
-            for (Picture pic : fullListPictures) {
-                if (pic.getTitle().toLowerCase(Locale.getDefault()).contains(filterPattern)) {
-                    pictures.add(pic);
-                }
-            }
-        }
-
-        notifyDataSetChanged();
-        //pictures.addAll(fullListPictures);
-
-    }
-
-    public void getFilteredDataFromRedis(String charText) {
-        charText = charText.toLowerCase(Locale.getDefault());
-
-        //pictures.addAll(getFilteredPicturesFromBackend(charText));
-
-        notifyDataSetChanged();
-    }
-
 
     private void setIfFavouritedFromPreferences(Picture pic){
         SharedPreferences favorites = mContext.getActivity().getSharedPreferences("favorites", Context.MODE_PRIVATE);
@@ -311,7 +189,6 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         removePictureFavouriteStateFromPreferences(pic.getId());
         showToastMessaggeShort("Picture is removed from favourites");
     }
-
     private void removePictureFavouriteStateFromPreferences(String pictureId){
         //SharedPreferences sharedPref = mContext.getActivity().getPreferences(mContext.getContext().MODE_PRIVATE);
         SharedPreferences favorites = mContext.getActivity().getSharedPreferences("favorites", Context.MODE_PRIVATE);
@@ -320,11 +197,9 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         editor.remove(pictureId);
         editor.commit();
     }
-
     private void showToastMessaggeShort(String messagge){
         Toast.makeText(mContext.getContext(), messagge, Toast.LENGTH_SHORT).show();
     }
-
     private void switchFavoriteState(Picture picture){
         if(picture.isFavourite()) {
             picture.setFavourite(false);
