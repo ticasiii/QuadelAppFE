@@ -20,21 +20,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/cover"
+            <RelativeLayout
                 android:layout_width="140dp"
                 android:layout_height="152dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:layout_marginVertical="10dp"
-                android:contentDescription="@string/todo"
-                android:scaleType="fitXY" />
+                android:id="@+id/rlAlarm"
+                android:background="@color/greyLight">
+
+                <ImageView
+                    android:id="@+id/cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:layout_marginVertical="10dp"
+                    android:contentDescription="@string/todo"
+                    android:scaleType="fitXY" />
+            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/cover">
+                android:layout_toRightOf="@id/rlAlarm">
 
 
                 <TextView

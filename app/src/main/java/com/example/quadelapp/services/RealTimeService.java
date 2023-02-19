@@ -95,10 +95,6 @@ public class RealTimeService extends Service {
                         FavouritesAndAlertFragment.fullListPictures.clear();
                         FavouritesAndAlertFragment.fullListPictures.addAll(picturesList);
                         FavouritesAndAlertFragment.adapter.notifyDataSetChanged();
-
-//                    Intent intent = new Intent(MyService.this, YourActivity.class);
-//                    intent.putExtra("data", data);
-//                    startActivity(intent);
                     }
                 }
                 @Override

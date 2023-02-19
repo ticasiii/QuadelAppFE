@@ -23,6 +23,7 @@ import com.example.quadelapp.services.RedisService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +46,6 @@ public class PicturesFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
     private RecyclerView recyclerView;
     private RedisService redisService;
     public  static PicturesAdapter adapter;
@@ -56,16 +56,6 @@ public class PicturesFragment extends Fragment {
     public PicturesFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PicturesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static PicturesFragment newInstance(String param1, String param2) {
         PicturesFragment fragment = new PicturesFragment();
         Bundle args = new Bundle();
@@ -74,7 +64,6 @@ public class PicturesFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,107 +75,54 @@ public class PicturesFragment extends Fragment {
     @Override
     public void onResume() {
         adapter.notifyDataSetChanged();
-
         super.onResume();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_pictures, container, false);
         pictures = new ArrayList<>();
-        /**initCollapsingToolbar(view);*/
-
         recyclerView = view.findViewById(R.id.recyclerview_id);
         adapter = new PicturesAdapter(this, pictures);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), 1);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-
         getPicturesFromRedis();
-        //preparePictures();
-        //preparePicturesFromBackend();
-
         return view;
     }
-
-
     private void preparePicturesFromRedis(){
         for (Picture pic : pictures) {
             pic.setImage(getResources().getIdentifier(pic.getTitle(), "drawable", getActivity().getPackageName()));
         }
     }
-
-    private void preparePictures() {
-        int covers[] = new int[11];
-
-        for (int index = 0; index < 11; index++) {
-            int resourceID = getResources().getIdentifier("album" + index, "drawable", getActivity().getPackageName());
-            covers[index] = resourceID;
-
+    private void changeFromCodeToWordState(Picture pic) {
+        if (Objects.equals(pic.getState(), "4")) {
+            pic.setState("ALARM");
+        } else if (Objects.equals(pic.getState(), "3")) {
+            pic.setState("FAULT");
+        } else if (Objects.equals(pic.getState(), "2")) {
+            pic.setState("OFF");
+        } else if (Objects.equals(pic.getState(), "1")) {
+            pic.setState("OK");
         }
-
-
-        Picture p = new Picture("0","Title1", "desc1", covers[0],"OK");
-        pictures.add(p);
-
-         p = new Picture("1","Title2", "desc2", covers[1],"ALARM");
-        pictures.add(p);
-
-        p = new Picture("2","Title3", "desc3", covers[2],"OFF");
-        pictures.add(p);
-
-        p = new Picture("3","Title4", "desc4", covers[3],"OK");
-        pictures.add(p);
-
-        p = new Picture("4","Title5", "desc5", covers[10],"ERROR");
-        pictures.add(p);
-
-        Log.i(TAG, "Values of talkList: " + pictures);
-
-        adapter.notifyDataSetChanged();
     }
-
-    private void changeFromCodeToWordState(Picture pic){
-
-        switch (pic.getState()){
-            case "1":
-                pic.setState("OK");
-            case "2":
-                pic.setState("OFF");
-            case "3":
-                pic.setState("ERROR");
-            case "4":
-                pic.setState("ALARM");
-            default:
-                pic.setState("OK");
-        }
-
-    }
-
     private void setIfFavouritedFromPreferences(Picture pic){
         SharedPreferences favorites = getActivity().getSharedPreferences("favorites", getContext().MODE_PRIVATE);
         pic.setFavourite(favorites.getBoolean(pic.getId(), false));
     }
-
-
     private void getPicturesFromRedis(){
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         redisService = retrofit.create(RedisService.class);
-
         Call<List<Picture>> call = redisService.getAllPictures();
-
         call.enqueue(new Callback<List<Picture>>() {
             @Override
             public void onResponse(@NonNull Call<List<Picture>> call, @NonNull Response<List<Picture>> response) {
-
                 if (response.body() != null) {
                     for(Picture p: response.body()) {
                         //p.setImage(getResources().getIdentifier(p.getTitle(), "drawable", getActivity().getPackageName()));
@@ -194,17 +130,11 @@ public class PicturesFragment extends Fragment {
                         changeFromCodeToWordState(p);
                         p.setImage(getResources().getIdentifier("toplanadudara" , "drawable", getActivity().getPackageName()));
                         //p.setImage(getResources().getIdentifier(p.getTitle(), "drawable", getActivity().getPackageName()));
-
                         pictures.add(p);
                     }
                 }
-                //spremanje adaptera
-
-                //adapter = new PicturesAdapter(PicturesFragment.this, pictures);
-                //recyclerView .setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             }
-
             @Override
             public void onFailure(@NonNull Call<List<Picture>> call, @NonNull Throwable t) {
                 Toast.makeText(getContext(), "Something went wrong with retrieving PICTURES FROM DB from DB!", Toast.LENGTH_SHORT).show();

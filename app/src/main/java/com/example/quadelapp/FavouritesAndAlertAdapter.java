@@ -81,10 +81,11 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
         holder.description.setText(picture.getDescription());
         holder.cover.setImageResource(picture.getImage());
         holder.state.setText(picture.getState());
-        setStateIcon(holder.ivState, picture.getState());
         setIfFavouritedFromPreferences(picture);
         setFavouriteIcon(holder.overflow, picture.isFavourite());
         setAlarmFrame(holder.rlAlarm, picture.getState());
+        setStateIcon(holder.ivState, picture.getState());
+
 
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -29,17 +29,16 @@ import com.example.quadelapp.Models.Picture;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyViewHolder> {
 
     private Fragment mContext;
     public List<Picture> pictures;
-   // private Map<String, Object> speakersList;
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, description, state;
         public ImageView cover, overflow, ivState;
-        public RelativeLayout stateColor, relative_layout_state;
+        public RelativeLayout stateColor, relative_layout_state, rlAlarm;
 
         public MyViewHolder(View view) {
             super(view);
@@ -51,10 +50,9 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
             state = view.findViewById(R.id.state);
             relative_layout_state = view.findViewById(R.id.relative_layout_state);
             ivState = view.findViewById(R.id.ivState);
+            rlAlarm = view.findViewById(R.id.rlAlarm);
         }
     }
-
-
     public PicturesAdapter(Fragment mContext, List<Picture> pictures) {
         this.mContext = mContext;
         this.pictures = pictures;
@@ -72,9 +70,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
                 Intent intent = new Intent(mContext.getContext(), PictureDetailsActivity.class);
                 intent.putExtra("pictureId", pictureId);
                 intent.putExtra("activityId", "picAdapter");
-
                 mContext.getContext().startActivity(intent);
-
             }
         });
         return myViewHolder;
@@ -86,11 +82,12 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         holder.title.setText(picture.getTitle());
         holder.description.setText(picture.getDescription());
         holder.cover.setImageResource(picture.getImage());
-
         setStateIcon(holder.ivState, picture.getState());
         setIfFavouritedFromPreferences(picture);
         setFavouriteIcon(holder.overflow, picture.isFavourite());
         holder.state.setText(picture.getState());
+        holder.state.setTextColor(Color.BLACK);
+        setAlarmFrame(holder, picture.getState());
 
 
 //        if(picture.getState() == "ALARM"){
@@ -140,6 +137,25 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         });
     }
 
+    private void setAlarmFrame(MyViewHolder holder, String state){
+        if(Objects.equals(state, "ALARM")){
+            holder.state.setTextColor(Color.RED);
+            holder.rlAlarm.setBackgroundColor(Color.RED);
+            ObjectAnimator animator = ObjectAnimator.ofInt(holder.rlAlarm, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
+
+            // duration of one color
+            animator.setDuration(500);
+            animator.setEvaluator(new ArgbEvaluator());
+
+            // color will be show in reverse manner
+            animator.setRepeatCount(Animation.REVERSE);
+
+            // It will be repeated up to infinite time
+            animator.setRepeatCount(Animation.INFINITE);
+            animator.start();
+        }
+    }
+
     private void setFavouriteIcon(ImageView iv, boolean isFavourite){
         if(!isFavourite){
             iv.setImageResource(R.drawable.icon_add_to_favourites40);
@@ -148,35 +164,15 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
             iv.setImageResource(R.drawable.icon_favourited40);
     }
 
-    private void blinkStateIVState(ImageView ivState, int colorState){
-        //holder.ivState.setBackgroundColor(colorState);
-
-        // adding the color to be shown
-        ObjectAnimator animator = ObjectAnimator.ofArgb(ivState, "backgroundColor", colorState, Color.WHITE, colorState);
-
-        // duration of one color
-        animator.setDuration(2000);
-        animator.setEvaluator(new ArgbEvaluator());
-
-        // color will be show in reverse manner
-        animator.setRepeatCount(Animation.REVERSE);
-
-        // It will be repeated up to infinite time
-        animator.setRepeatCount(Animation.INFINITE);
-        animator.start();
-    }
-
     public void setStateIcon(ImageView iv, String state){
-        switch (state){
-            case "ALARM":
-                iv.setImageResource(R.drawable.ic_red_circle);
-            case "FAULT":
-                iv.setImageResource(R.drawable.ic_yellow_circle);
-            case "OFF":
-                iv.setImageResource(R.drawable.ic_grey_circle);
-            case "OK":
-                iv.setImageResource(R.drawable.ic_green_circle);
-            default: iv.setImageResource(R.drawable.ic_green_circle);
+        if(Objects.equals(state, "ALARM")) {
+            iv.setImageResource(R.drawable.ic_red_circle);
+        } else if (Objects.equals(state, "FAULT")) {
+            iv.setImageResource(R.drawable.ic_yellow_circle);
+        } else if (Objects.equals(state, "OFF")) {
+            iv.setImageResource(R.drawable.ic_grey_circle);
+        } else if (Objects.equals(state, "OK")) {
+            iv.setImageResource(R.drawable.ic_green_circle);
         }
     }
 
