@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -71,7 +72,7 @@ public class PictureDetailsActivity extends AppCompatActivity {
     private Map<String, Picture> pictures;
     private ImageView ivCover, ivState;
     private LineChart ivChart;
-    private BarChart ivChartBar;
+    private BarChart barChart;
     private TextView tvDesc, tvDescChart;
     private Toolbar toolbar;
     private CollapsingToolbarLayout toolBarLayout;
@@ -95,7 +96,7 @@ public class PictureDetailsActivity extends AppCompatActivity {
         tvDesc = binding.getRoot().findViewById(R.id.tv_description);
         tvDescChart = binding.getRoot().findViewById(R.id.tv_chart_description);
         ivChart = binding.getRoot().findViewById(R.id.iv_chart);
-        ivChartBar = binding.getRoot().findViewById(R.id.iv_chartBar);
+        barChart = binding.getRoot().findViewById(R.id.iv_chartBar);
         ivState = binding.getRoot().findViewById(R.id.ivState);
 
         ActionBar actionBar = getSupportActionBar();
@@ -153,6 +154,17 @@ public class PictureDetailsActivity extends AppCompatActivity {
 //            ObjectAnimator animator2 = ObjectAnimator.ofInt(toolBarLayout, "contentScrimColor", color, Color.WHITE, color);
 //            setAnimator(animator2);
 //    }
+
+    private void getPictureFromRedisAndFillData(String pictureId){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        redisService = retrofit.create(RedisService.class);
+        getPictureFromRedisByIDAndFillData(redisService, pictureId);
+        getHarcodedDataForChart();
+        //getAndShowDataInChart(redisService, pictureId);
+    }
     private void setStateIcon(String state){
         if(Objects.equals(state, "ALARM")){
             ivState.setImageResource(R.drawable.ic_red_circle);
@@ -210,14 +222,8 @@ public class PictureDetailsActivity extends AppCompatActivity {
         else picture.setFavourite(true);
     }
 
-    private void getPictureFromRedisAndFillData(String pictureId){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        redisService = retrofit.create(RedisService.class);
+    private void getPictureFromRedisByIDAndFillData(RedisService redisService, String pictureId){
         Call<Picture> call = redisService.getPictureById(pictureId);
-
         call.enqueue(new Callback<Picture>() {
             @Override
             public void onResponse(@NonNull Call<Picture> call, @NonNull Response<Picture> response) {
@@ -244,6 +250,25 @@ public class PictureDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void getAndShowDataInChart(RedisService redisService, String elementId){
+        Call<List<TimeSeriesData>> call = redisService.getTimeSeriesDataById(elementId);
+        call.enqueue(new Callback<List<TimeSeriesData>>() {
+            @Override
+            public void onResponse(Call<List<TimeSeriesData>> call, Response<List<TimeSeriesData>> response) {
+                if (response.isSuccessful()) {
+                    List<TimeSeriesData> data = response.body();
+                    showDataInBarChart(data);
+                } else {
+                    showToastMessaggeShort("Response body for TimeSeriesData is NULL!");
+                }
+            }
+            @Override
+            public void onFailure(Call<List<TimeSeriesData>> call, Throwable t) {
+                showToastMessaggeShort("Something went wrong with retrieving TimeSeriesData from DB!");
+            }
+        });
+    }
     private void setFields(Picture picture){
         toolBarLayout.setTitle(picture.getTitle());
         Drawable nav = toolbar.getNavigationIcon();
@@ -263,18 +288,15 @@ public class PictureDetailsActivity extends AppCompatActivity {
         pic.setFavourite(favorites.getBoolean(pic.getId(), false));
     }
 
-     private void changeFromCodeToWordState(Picture pic){
-        switch (pic.getState()){
-            case "1":
-                pic.setState("OK");
-            case "2":
-                pic.setState("OFF");
-            case "3":
-                pic.setState("ERROR");
-            case "4":
-                pic.setState("ALARM");
-            default:
-                pic.setState("OK");
+    private void changeFromCodeToWordState(Picture pic) {
+        if (Objects.equals(pic.getState(), "4")) {
+            pic.setState("ALARM");
+        } else if (Objects.equals(pic.getState(), "3")) {
+            pic.setState("FAULT");
+        } else if (Objects.equals(pic.getState(), "2")) {
+            pic.setState("OFF");
+        } else if (Objects.equals(pic.getState(), "1")) {
+            pic.setState("OK");
         }
     }
     private void getHarcodedDataForChart(){
@@ -294,68 +316,6 @@ public class PictureDetailsActivity extends AppCompatActivity {
         data.add(tsdRecord);
 
         showDataInBarChart(data);
-
-        showDataInChart(data);
-    }
-    private void setNamesOfAxiss(BarChart chart) {
-        // Set the X-axis name
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getAxisLabel(float value, AxisBase axis) {
-                // Format the X-axis label as desired
-                //return "Time: " +value;
-                return getFormattedDate((long)value);
-            }
-        });
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-        xAxis.setGranularity(1f); // only intervals of 1
-        xAxis.setLabelRotationAngle(-45);
-
-        // Set the Y-axis name
-        YAxis yAxis = chart.getAxisLeft();
-        yAxis.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getAxisLabel(float value, AxisBase axis) {
-                // Format the Y-axis label as desired
-                return "State: " + ConvertFloatValueToStringValue(value);
-            }
-        });
-        yAxis.setDrawGridLines(false);
-        yAxis.setGranularity(1f);
-        //
-        chart.invalidate();
-    }
-    private void setNamesOfAxiss(LineChart chart) {
-        // Set the X-axis name
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getAxisLabel(float value, AxisBase axis) {
-                // Format the X-axis label as desired
-                //return "Time: " +value;
-                return getFormattedDate((long)value);
-            }
-        });
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-        xAxis.setGranularity(1f); // only intervals of 1
-        xAxis.setLabelRotationAngle(-45);
-
-        // Set the Y-axis name
-        YAxis yAxis = chart.getAxisLeft();
-        yAxis.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getAxisLabel(float value, AxisBase axis) {
-                // Format the Y-axis label as desired
-                return "State: " + ConvertFloatValueToStringValue(value);
-            }
-        });
-        yAxis.setDrawGridLines(false);
-        yAxis.setGranularity(1f);
-        //
-        chart.invalidate();
     }
 
     private String getFormattedDate(long timestamp) {
@@ -376,46 +336,85 @@ public class PictureDetailsActivity extends AppCompatActivity {
             return "ALARM";
     }
 
-    private void showDataInChart(List<TimeSeriesData> data) {
-        List<Entry> entries = new ArrayList<>();
-        for (TimeSeriesData timeSeriesData : data) {
-            entries.add(new Entry(timeSeriesData.getTimestamp(), Float.parseFloat(timeSeriesData.getValue())));
-        }
-        LineDataSet dataSet = new LineDataSet(entries, "Element Data");
-        setDataSet(dataSet);
-        setNamesOfAxiss(ivChart);
-        LineData lineData = new LineData(dataSet);
-        ivChart.setData(lineData);
-        ivChart.invalidate();
-    }
-
-    private void showDataInBarChart(List<TimeSeriesData> data) {
-        List<BarEntry> entries = new ArrayList<>();
-        for (TimeSeriesData timeSeriesData : data) {
-            entries.add(new BarEntry(timeSeriesData.getTimestamp(), Float.parseFloat(timeSeriesData.getValue())));
-        }
-        BarDataSet dataSet = new BarDataSet(entries, "Element data");
-        //setDataSet(dataSet);
-        //setNamesOfAxiss(chart);
-        BarData barData = new BarData(dataSet);
-        ivChartBar.setData(barData);
-        ivChartBar.invalidate();
-    }
-
-    private void setDataSet(BarDataSet dataSet){
-        dataSet.setColor(Color.RED);
-        dataSet.setValueTextColor(Color.BLACK);
-        dataSet.setDrawValues(true);
-        dataSet.setValueFormatter(new PictureDetailsActivity.StringValueFormatter(valueMap));
-    }
-    private void setDataSet(LineDataSet dataSet){
-        dataSet.setColor(Color.RED);
-        dataSet.setValueTextColor(Color.BLACK);
-        dataSet.setDrawValues(true);
-        dataSet.setValueFormatter(new PictureDetailsActivity.StringValueFormatter(valueMap));
-    }
-
-    private void showToastMessaggeShort(String messagge){
+     private void showToastMessaggeShort(String messagge){
         Toast.makeText(PictureDetailsActivity.this, messagge, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showDataInBarChart(List<TimeSeriesData> timeSeriesDataList){
+        //BarChart chart = findViewById(R.id.bar_chart);
+
+
+        List<BarEntry> entries = new ArrayList<>();
+
+        for (int i = 0; i < timeSeriesDataList.size(); i++) {
+            TimeSeriesData data = timeSeriesDataList.get(i);
+            float value = Float.parseFloat(data.getValue());
+            entries.add(new BarEntry(i, value));
+        }
+
+        BarDataSet dataSet = new BarDataSet(entries, "Monthly number of ALARMS");
+        //dataSet.setColor(Color.BLUE);
+        dataSet.setDrawValues(true);
+        dataSet.setBarBorderWidth(1f);
+        dataSet.setBarBorderColor(Color.BLACK);
+        dataSet.setColor(Color.RED);
+
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.format(Locale.getDefault(), "%.0f", value);
+            }
+        });
+
+        dataSet.setValueTextSize(10f);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getBarLabel(BarEntry barEntry) {
+                return String.format(Locale.getDefault(), "%.0f", barEntry.getY());
+            }
+        });
+
+        BarData barData = new BarData(dataSet);
+        barChart.setData(barData);
+        barChart.setDrawGridBackground(false);
+        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        barChart.getXAxis().setGranularity(1f);
+        barChart.getXAxis().setLabelCount(timeSeriesDataList.size());
+        barChart.getXAxis().setDrawLabels(true);
+        barChart.setBackgroundColor(Color.LTGRAY);
+
+
+        barChart.getXAxis().setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int index = (int) value;
+                if (index >= 0 && index < timeSeriesDataList.size()) {
+                    long timestamp = timeSeriesDataList.get(index).getTimestamp();
+                    return getMonthYearFromUnixTimestamp(timestamp);
+                } else {
+                    return "";
+                }
+            }
+        });
+        barChart.getXAxis().setDrawGridLines(false);
+        barChart.getXAxis().setDrawAxisLine(true);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawAxisLine(true);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawAxisLine(true);
+        barChart.getDescription().setEnabled(false);
+        barChart.setTouchEnabled(false);
+        barChart.setDragEnabled(false);
+        barChart.setScaleEnabled(false);
+        barChart.setDoubleTapToZoomEnabled(false);
+        barChart.invalidate();
+    }
+
+    public static String getMonthYearFromUnixTimestamp(long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
+        Date date = new Date(timestamp*1000*3600);
+        return sdf.format(date);
     }
 }

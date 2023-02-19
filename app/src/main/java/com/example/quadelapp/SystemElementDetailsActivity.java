@@ -8,12 +8,14 @@ import androidx.appcompat.widget.Toolbar;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -108,7 +110,14 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
+        finish();
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
     }
 //    @Override
 //    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
@@ -131,14 +140,11 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         redisService = retrofit.create(RedisService.class);
         if(elementType == "cp") {
             getControlPanelFromRedisAndFillData(redisService, elementId);
-            getDataForChart(redisService, elementId);
         }
-
         else {
             getElementFromRedisAndFillData(redisService, elementId);
-            getDataForChart(redisService, elementId);
-
         }
+        getDataForChart(redisService, elementId);
     }
     private void getControlPanelFromRedisAndFillData(RedisService redisService, String controlPanelId){
         Call<ControlPanel> call = redisService.getControlPanelById(controlPanelId);
@@ -258,7 +264,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<List<TimeSeriesData>> call, Response<List<TimeSeriesData>> response) {
                 if (response.isSuccessful()) {
                     List<TimeSeriesData> data = response.body();
-                    showDataInBarChart(data);
+                    drawChart(data);
                 } else {
                     showToastMessaggeShort("Response body for TimeSeriesData is NULL!");
                 }
@@ -269,6 +275,97 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void drawChart(List<TimeSeriesData> timeSeriesDataList) {
+        boolean hasDataWithValue = false;
+        for (TimeSeriesData data : timeSeriesDataList) {
+            if (Float.valueOf(data.getValue()) > 0) {
+                hasDataWithValue = true;
+                break;
+            }
+        }
+        if (hasDataWithValue) {
+            // Create Bar Chart
+            barChart.setVisibility(View.VISIBLE);
+            showDataInBarChart(timeSeriesDataList);
+        } else {
+            // Create Line Chart with a value of 1
+            ivChart.setVisibility(View.VISIBLE);
+            createLineChartWithValueOK();
+        }
+    }
+
+    private void createLineChartWithValueOK() {
+        LineChart chart = findViewById(R.id.iv_chart);
+
+        // create a data set with a value of 1
+        List<Entry> entries = new ArrayList<>();
+        entries.add(new Entry(0, 1));
+        entries.add(new Entry(1, 1));
+
+        LineDataSet dataSet = new LineDataSet(entries, "State have always been OK");
+
+        dataSet.setColor(Color.BLACK);
+        dataSet.setLineWidth(4f);
+        dataSet.setDrawValues(true);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        dataSet.setDrawCircles(false);
+        //dataSet.setDrawValues(true);
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int)value);
+            }
+        });
+
+        LineData lineData = new LineData(dataSet);
+
+        // customize x-axis
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setAxisLineColor(Color.BLACK);
+        xAxis.setAxisLineWidth(3f);
+        xAxis.setLabelCount(-2);
+        //xAxis.setCenterAxisLabels(true);
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return "State have always been OK";
+            }
+        });
+
+        // customize y-axis
+        YAxis yAxis = chart.getAxisLeft();
+        yAxis.setDrawGridLines(false);
+        yAxis.setDrawAxisLine(true);
+        yAxis.setAxisLineColor(Color.BLACK);
+        //yAxis.setLabelCount(0);
+        yAxis.setAxisLineWidth(3f);
+        //yAxis.setCenterAxisLabels(true);
+
+//        yAxis.setValueFormatter(new ValueFormatter() {
+//            @Override
+//            public String getFormattedValue(float value) {
+//                return "1";
+//            }
+//        });
+
+        chart.setData(lineData);
+        chart.setBackgroundColor(Color.LTGRAY);
+
+        chart.getDescription().setEnabled(false);
+        chart.getLegend().setEnabled(false);
+        chart.setTouchEnabled(false);
+        chart.setDragEnabled(false);
+        chart.setScaleEnabled(false);
+        chart.setDoubleTapToZoomEnabled(false);
+        chart.invalidate();
+    }
+
 
     private void getHarcodedDataForBarChart(){
 
@@ -292,6 +389,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
     private void showDataInBarChart(List<TimeSeriesData> timeSeriesDataList){
         //BarChart chart = findViewById(R.id.bar_chart);
 
+
         List<BarEntry> entries = new ArrayList<>();
 
         for (int i = 0; i < timeSeriesDataList.size(); i++) {
@@ -305,6 +403,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         dataSet.setDrawValues(true);
         dataSet.setBarBorderWidth(1f);
         dataSet.setBarBorderColor(Color.BLACK);
+        dataSet.setColor(Color.RED);
 
         dataSet.setValueFormatter(new ValueFormatter() {
             @Override
@@ -330,7 +429,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         barChart.getXAxis().setGranularity(1f);
         barChart.getXAxis().setLabelCount(timeSeriesDataList.size());
         barChart.getXAxis().setDrawLabels(true);
-        barChart.setBackgroundColor(Color.YELLOW);
+        barChart.setBackgroundColor(Color.LTGRAY);
 
 
         barChart.getXAxis().setValueFormatter(new ValueFormatter() {
@@ -361,7 +460,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
 
     public static String getMonthYearFromUnixTimestamp(long timestamp) {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
-        Date date = new Date(timestamp*1000*3600);
+        Date date = new Date(timestamp);
         return sdf.format(date);
     }
 
