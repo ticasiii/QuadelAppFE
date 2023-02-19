@@ -20,6 +20,27 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface RedisService {
+
+
+    @GET("picture/bySearch/{queryText}")
+    Call<List<Picture>> getFilteredPictures(@Path("queryText")  String queryText);
+    @GET("controlpanels/timeseries/numberOfAlarmsOfElement/{elementId}")
+    Call<List<TimeSeriesData>> getTimeSeriesDataById(@Path("elementId") String elementId);
+    @GET("picture/allSystemElements")
+    Call<List<SystemElement>> getAllSystemElements();
+    @GET("controlpanel/{id}")
+    Call<ControlPanel> getControlPanelById(@Path("id") String id);
+
+    @GET("element/{id}")
+    Call<Element> getElementById(@Path("id") String id);
+
+    @GET("picture/id/{id}")
+    Call<Picture> getPictureById(@Path("id") String id);
+
+    @GET("picture/all")
+    Call<List<Picture>> getAllPictures();
+    @GET("picture/favoritesAndAlerts/{arrayIds}")
+    Call<List<Picture>> getFavoritesAndAlertPictures(@Path("arrayIds") ArrayList<String> arrayIds);
     @PUT("element/")
     Call<Element> createElement(@Body Element e);
 
@@ -74,24 +95,6 @@ public interface RedisService {
     Call<List<Picture>> getAlertedPictures();
     @GET("picture/fromFavoriteList")
     Call<List<Picture>> getFavoritePictures(@Body List<String> arrayIds);
-    @GET("picture/bySearch/{queryText}")
-    Call<List<Picture>> getFilteredPictures(@Path("queryText")  String queryText);
-    @GET("controlpanels/timeseries/numberOfAlarmsOfElement/{elementId}")
-    Call<List<TimeSeriesData>> getTimeSeriesDataById(@Path("elementId") String elementId);
-    @GET("picture/allSystemElements")
-    Call<List<SystemElement>> getAllSystemElements();
-    @GET("controlpanel/{id}")
-    Call<ControlPanel> getControlPanelById(@Path("id") String id);
 
-    @GET("element/{id}")
-    Call<Element> getElementById(@Path("id") String id);
-
-    @GET("picture/id/{id}")
-    Call<Picture> getPictureById(@Path("id") String id);
-
-    @GET("picture/all")
-    Call<List<Picture>> getAllPictures();
-    @GET("picture/favoritesAndAlerts/{arrayIds}")
-    Call<List<Picture>> getFavoritesAndAlertPictures(@Path("arrayIds") ArrayList<String> arrayIds);
 
 }
