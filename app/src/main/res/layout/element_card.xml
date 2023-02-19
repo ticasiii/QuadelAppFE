@@ -5,30 +5,30 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
-
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_gravity="center"
         android:layout_margin="@dimen/card_margin"
-        android:elevation="3dp"
-        >
-
+        android:elevation="3dp">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/cover"
-                android:layout_width="wrap_content"
-                android:layout_height="125dp"
-                android:background="@drawable/circle_shape"
-                android:contentDescription="@string/todo"
-                android:scaleType="centerCrop"
-                android:adjustViewBounds="true"/>
-
+            <RelativeLayout
+                android:id="@+id/rlAlarm"
+                android:layout_width="140dp"
+                android:layout_height="152dp"
+                android:background="@color/greyLight">
+                <ImageView
+                    android:id="@+id/cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:layout_margin="5dp"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"/>
+            </RelativeLayout>
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
@@ -39,8 +39,7 @@
                 android:paddingRight="@dimen/picture_title_padding"
                 android:textColor="@color/picture_title"
                 android:textSize="@dimen/picture_title"
-                android:layout_toRightOf="@id/cover"/>
-
+                android:layout_toRightOf="@id/rlAlarm"/>
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
@@ -50,10 +49,8 @@
                 android:paddingBottom="@dimen/description_padding_bottom"
                 android:layout_marginTop="15dp"
                 android:textSize="@dimen/description_size"
-                android:layout_toRightOf="@id/cover"
+                android:layout_toRightOf="@id/rlAlarm"
                 android:layout_below="@id/title"/>
-
-
             <ImageView
                 android:id="@+id/ivState"
                 android:layout_width="30dp"
@@ -64,10 +61,6 @@
                 android:layout_toRightOf="@id/title"
                 android:scaleType="centerCrop"
                 app:cardCornerRadius="30dp"/>
-
-
         </RelativeLayout>
-
     </androidx.cardview.widget.CardView>
-
 </LinearLayout>

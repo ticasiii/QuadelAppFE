@@ -1,5 +1,6 @@
 package com.example.quadelapp;
 
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import com.example.quadelapp.Models.SystemElement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAdapter.MyViewHolder> {
 
@@ -29,6 +32,7 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
         public TextView title, description;
         public ImageView cover;
         public ImageView ivState;
+        public RelativeLayout rlAlarm;
 
         public MyViewHolder(View view) {
             super(view);
@@ -36,15 +40,13 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
             description = view.findViewById(R.id.description);
             cover = view.findViewById(R.id.cover);
             ivState = view.findViewById(R.id.ivState);
+            rlAlarm = view.findViewById(R.id.rlAlarm);
         }
     }
-
-
     public SystemElementsAdapter(Fragment mContext, List<SystemElement> elements) {
         this.mContext = mContext;
         this.systemElements = elements;
     }
-
     @Override
     public SystemElementsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -59,7 +61,6 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
                     elementType = "cp";
                 }
                 Intent intent = new Intent(mContext.getContext(), SystemElementDetailsActivity.class);
-                //ovde ubaciti gde da ide dalje
                 intent.putExtra("elementId", elementId);
                 intent.putExtra("elementType", elementType );
                 mContext.getContext().startActivity(intent);
@@ -75,7 +76,7 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
         holder.description.setText(systemElement.getDescription());
         holder.cover.setImageResource(systemElement.getElementImage());
         holder.ivState.setImageResource(R.drawable.ic_green_circle);
-        setStateImageView(holder.ivState, systemElement.getState());
+        setStateImageViewAndRL(holder, systemElement.getState());
         //blinkStateLayout(holder.ivState);
         holder.ivState.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,15 +92,30 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
         return systemElements.size();
     }
 
-    public void setStateImageView(ImageView iv, String state){
-        if(state == "OK") {
-            iv.setImageResource(R.drawable.ic_green_circle);
-        } else if (state == "ALARM") {
-            iv.setImageResource(R.drawable.ic_red_circle);
-        } else if (state == "FAULT") {
-            iv.setImageResource(R.drawable.ic_yellow_circle);
+    public void setStateImageViewAndRL(MyViewHolder holder, String state){
+        if(Objects.equals(state, "OK")) {
+            holder.ivState.setImageResource(R.drawable.ic_green_circle);
+        } else if (Objects.equals(state, "ALARM")) {
+            holder.ivState.setImageResource(R.drawable.ic_red_circle);
+            holder.rlAlarm.setBackgroundColor(Color.RED);
+
+            ObjectAnimator animator = ObjectAnimator.ofInt(holder.rlAlarm, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
+
+            // duration of one color
+            animator.setDuration(500);
+            animator.setEvaluator(new ArgbEvaluator());
+
+            // color will be show in reverse manner
+            animator.setRepeatCount(Animation.REVERSE);
+
+            // It will be repeated up to infinite time
+            animator.setRepeatCount(Animation.INFINITE);
+            animator.start();
+
+        } else if (Objects.equals(state, "FAULT")) {
+            holder.ivState.setImageResource(R.drawable.ic_yellow_circle);
         } else
-            iv.setImageResource(R.drawable.ic_grey_circle);
+            holder.ivState.setImageResource(R.drawable.ic_grey_circle);
     }
 
     public void blinkStateLayout(RelativeLayout layout){
