@@ -22,6 +22,7 @@ import com.example.quadelapp.services.RedisService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -128,8 +129,8 @@ public class PicturesFragment extends Fragment {
                         //p.setImage(getResources().getIdentifier(p.getTitle(), "drawable", getActivity().getPackageName()));
                         setIfFavouritedFromPreferences(p);
                         changeFromCodeToWordState(p);
-                        p.setImage(getResources().getIdentifier("toplanadudara" , "drawable", getActivity().getPackageName()));
-                        //p.setImage(getResources().getIdentifier(p.getTitle(), "drawable", getActivity().getPackageName()));
+                        //p.setImage(getResources().getIdentifier("toplanadudara" , "drawable", getActivity().getPackageName()));
+                        p.setImage(getResources().getIdentifier("toplana"+p.getTitle().toLowerCase(Locale.ROOT), "drawable", getActivity().getPackageName()));
                         pictures.add(p);
                     }
                 }

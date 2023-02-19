@@ -236,8 +236,8 @@ public class PictureDetailsActivity extends AppCompatActivity {
                     picture.setState(response.body().getState());
                     setIfFavouritedToPreferences(picture);
                     changeFromCodeToWordState(picture);
-                    picture.setImage(getResources().getIdentifier("toplanadudara" , "drawable", PictureDetailsActivity.this.getPackageName()));
-                    //picture.setImage(getResources().getIdentifier(picture.getTitle(), "drawable", getActivity().getPackageName()));
+                    //picture.setImage(getResources().getIdentifier("toplanadudara" , "drawable", PictureDetailsActivity.this.getPackageName()));
+                    picture.setImage(getResources().getIdentifier("toplana"+picture.getTitle().toLowerCase(Locale.ROOT), "drawable", PictureDetailsActivity.this.getPackageName()));
                     setFields(picture);
                 }
                 else{

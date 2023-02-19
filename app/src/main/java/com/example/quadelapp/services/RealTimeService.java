@@ -22,6 +22,7 @@ import com.example.quadelapp.SystemElementsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
@@ -90,7 +91,9 @@ public class RealTimeService extends Service {
                         picturesList = response.body();
                         for (Picture p : picturesList) {
                             changeFromCodeToWordState(p);
-                            p.setImage(getResources().getIdentifier("toplanadudara", "drawable", getPackageName()));
+                            //p.setImage(getResources().getIdentifier("toplanadudara", "drawable", getPackageName()));
+                            p.setImage(getResources().getIdentifier("toplana"+p.getTitle().toLowerCase(Locale.ROOT), "drawable", getPackageName()));
+
                         }
                         FavouritesAndAlertFragment.fullListPictures.clear();
                         FavouritesAndAlertFragment.fullListPictures.addAll(picturesList);

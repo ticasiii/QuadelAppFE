@@ -168,8 +168,8 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         cp.setDescription(response.body().getDescription());
         cp.setState(response.body().getState());
         changeFromCodeToWordState(cp);
-        cp.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
-        //cp.setElementImage(getResources().getIdentifier(cp.getTitle(), "drawable", ControlPanelDetailsActivity.this.getPackageName()));
+        //cp.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
+        cp.setElementImage(getResources().getIdentifier(cp.getTitle().toLowerCase(Locale.ROOT), "drawable", SystemElementDetailsActivity.this.getPackageName()));
         setFields(cp);
     }
 
@@ -226,7 +226,9 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         e.setDescription(response.body().getDescription());
         e.setState(response.body().getState());
         changeFromCodeToWordState(e);
-        e.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
+        //e.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
+        e.setElementImage(getResources().getIdentifier(e.getTitle().toLowerCase(Locale.ROOT) , "drawable", SystemElementDetailsActivity.this.getPackageName()));
+
         setFields(e);
     }
 

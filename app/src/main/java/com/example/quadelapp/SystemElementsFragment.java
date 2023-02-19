@@ -22,6 +22,7 @@ import com.example.quadelapp.services.RedisService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -100,8 +101,17 @@ public class SystemElementsFragment extends Fragment {
                 if (response.body() != null) {
                     for(SystemElement se: response.body()) {
                         changeFromCodeToWordState(se);
-                        se.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", getActivity().getPackageName()));
-                        //p.setImage(getResources().getIdentifier(p.getTitle(), "drawable", getActivity().getPackageName()));
+                        if(Objects.equals(se.getTitle(), "CHQ-MRC2"))
+                            se.setElementImage(getResources().getIdentifier("chq_mrc2","drawable", getActivity().getPackageName()));
+                        else if(Objects.equals(se.getTitle(), "ALPHA 1100")){
+                            se.setElementImage(getResources().getIdentifier("al_1100","drawable", getActivity().getPackageName()));
+                        }
+                        else if (Objects.equals(se.getTitle(), "ALPHA 2100")) {
+                            se.setElementImage(getResources().getIdentifier("al_2100","drawable", getActivity().getPackageName()));
+                        }
+                        else {
+                            se.setElementImage(getResources().getIdentifier(se.getTitle().toLowerCase(Locale.ROOT), "drawable", getActivity().getPackageName()));
+                        }
                         elementsFromResponse.add(se);
                     }
                 }
