@@ -42,6 +42,7 @@
                 android:id="@+id/relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="45dp"
                 android:layout_toRightOf="@id/rlAlarm">
 
 
@@ -92,13 +93,11 @@
                 android:id="@+id/overflow"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:layout_marginTop="45dp"
                 android:layout_marginBottom="5dp"
-                android:layout_alignEnd="@id/relative_layout"
-                android:layout_below="@id/relative_layout"
-                android:scaleType="centerCrop"
-                android:background="@drawable/circle_shape"
-
+                android:layout_marginTop="45dp"
+                android:layout_marginLeft="45dp"
+                android:layout_alignEnd="@id/ivState"
+                android:layout_below="@id/ivState"
                 android:src="@drawable/icon_add_to_favourites40" />
 
 

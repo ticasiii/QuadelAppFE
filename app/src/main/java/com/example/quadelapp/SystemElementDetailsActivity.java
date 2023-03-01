@@ -144,7 +144,10 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         else {
             getElementFromRedisAndFillData(redisService, elementId);
         }
-        getDataForChart(redisService, elementId);
+        if(Integer.parseInt(elementId)<27)
+            getDataForChart(redisService, elementId + 27);
+        else
+            getDataForChart(redisService, elementId);
     }
     private void getControlPanelFromRedisAndFillData(RedisService redisService, String controlPanelId){
         Call<ControlPanel> call = redisService.getControlPanelById(controlPanelId);
