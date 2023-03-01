@@ -26,8 +26,6 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
 
     private final Fragment mContext;
     private final List<SystemElement> systemElements;
-    private Map<String, Object> speakersList;
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, description;
         public ImageView cover;
@@ -77,7 +75,6 @@ public class SystemElementsAdapter extends RecyclerView.Adapter<SystemElementsAd
         holder.cover.setImageResource(systemElement.getElementImage());
         holder.ivState.setImageResource(R.drawable.ic_green_circle);
         setStateImageViewAndRL(holder, systemElement.getState());
-        //blinkStateLayout(holder.ivState);
         holder.ivState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

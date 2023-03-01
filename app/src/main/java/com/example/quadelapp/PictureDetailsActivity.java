@@ -66,7 +66,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PictureDetailsActivity extends AppCompatActivity {
 
-    //public Picture pic;
     private String pictureId, activityId;
     private RedisService redisService;
     private Map<String, Picture> pictures;
@@ -131,30 +130,6 @@ public class PictureDetailsActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
-
-//    private void setToolbarColorBasedOnState(CollapsingToolbarLayout toolBarLayout, String state){
-//        int color;
-//        if(Objects.equals(state, "ALARM")){
-//            color = Color.RED;
-//        }
-//        else if(Objects.equals(state, "ERROR"))
-//        {
-//            color = Color.YELLOW;
-//        } else if (Objects.equals(state, "OFF")) {
-//            color = Color.GRAY;
-//        }
-//        else {
-//            color = Color.GREEN;
-//        }
-//        toolBarLayout.setContentScrimColor(color);
-//            // adding the color to be shown
-//            ObjectAnimator animator1 = ObjectAnimator.ofInt(toolBarLayout, "backgroundColor", color, Color.WHITE, color);
-//            setAnimator(animator1);
-//
-//            ObjectAnimator animator2 = ObjectAnimator.ofInt(toolBarLayout, "contentScrimColor", color, Color.WHITE, color);
-//            setAnimator(animator2);
-//    }
-
     private void getPictureFromRedisAndFillData(String pictureId){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
@@ -163,7 +138,6 @@ public class PictureDetailsActivity extends AppCompatActivity {
         redisService = retrofit.create(RedisService.class);
         getPictureFromRedisByIDAndFillData(redisService, pictureId);
         getHarcodedDataForChart();
-        //getAndShowDataInChart(redisService, pictureId);
     }
     private void setStateIcon(String state){
         if(Objects.equals(state, "ALARM")){

@@ -67,17 +67,12 @@ public class RealTimeService extends Service {
         return null;
     }
     private void sendRetrofitRequest() {
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         redisService = retrofit.create(RedisService.class);
-
         fillDataOnFavouritesAndAlertFrgmentEvery2Secs();
-//        fillDataOnPicturesFragmentEvery2Secs();
-//        fillDataOnSystemElementsFrgmentEvery2Secs();
     }
     private void fillDataOnFavouritesAndAlertFrgmentEvery2Secs() {
         if (!FavouritesAndAlertFragment.isQueryActive) {
@@ -91,9 +86,7 @@ public class RealTimeService extends Service {
                         picturesList = response.body();
                         for (Picture p : picturesList) {
                             changeFromCodeToWordState(p);
-                            //p.setImage(getResources().getIdentifier("toplanadudara", "drawable", getPackageName()));
                             p.setImage(getResources().getIdentifier("toplana"+p.getTitle().toLowerCase(Locale.ROOT), "drawable", getPackageName()));
-
                         }
                         FavouritesAndAlertFragment.fullListPictures.clear();
                         FavouritesAndAlertFragment.fullListPictures.addAll(picturesList);

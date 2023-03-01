@@ -67,7 +67,6 @@ import com.github.mikephil.charting.charts.LineChart;
 public class SystemElementDetailsActivity extends AppCompatActivity {
     private String elementId, elementType;
     private RedisService redisService;
-    private Map<String, Picture> pictures;
     private ImageView ivCover, ivState;
     private LineChart ivChart;
     private BarChart barChart;
@@ -119,13 +118,6 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         super.onDestroy();
         finish();
     }
-//    @Override
-//    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.system_element_details_menu, menu);
-//        stateItem = menu.findItem(R.id.action_state);
-//        return true;
-//    }
     private void setValueMap(){
         valueMap.put(1.0f, "OK");
         valueMap.put(2.0f, "OFF");
@@ -171,7 +163,6 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         cp.setDescription(response.body().getDescription());
         cp.setState(response.body().getState());
         changeFromCodeToWordState(cp);
-        //cp.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
         cp.setElementImage(getResources().getIdentifier(cp.getTitle().toLowerCase(Locale.ROOT), "drawable", SystemElementDetailsActivity.this.getPackageName()));
         setFields(cp);
     }
@@ -188,9 +179,6 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         tvDesc.setText(cp.getDescription());
         tvDescChart.setText("Description of chart");
         setStateIcon(cp.getState());
-        //getHarcodedDataForChart();
-        //getHarcodedDataForBarChart();
-
     }
     private void setStateIcon(String state){
         if(Objects.equals(state, "ALARM")){
@@ -229,9 +217,7 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         e.setDescription(response.body().getDescription());
         e.setState(response.body().getState());
         changeFromCodeToWordState(e);
-        //e.setElementImage(getResources().getIdentifier("toplanadudara" , "drawable", SystemElementDetailsActivity.this.getPackageName()));
         e.setElementImage(getResources().getIdentifier(e.getTitle().toLowerCase(Locale.ROOT) , "drawable", SystemElementDetailsActivity.this.getPackageName()));
-
         setFields(e);
     }
 
@@ -247,12 +233,8 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         tvDesc.setText(e.getDescription());
         tvDescChart.setText("Description of chart");
         setStateIcon(e.getState());
-        //getHarcodedDataForChart();
-        //getHarcodedDataForBarChart();
-        //getDataForChart(redisService, elementId);
     }
     private void changeFromCodeToWordState(SystemElement el){
-
         if(Objects.equals(el.getState(), "4"))
             el.setState("ALARM");
         else if (Objects.equals(el.getState(), "2"))
@@ -350,14 +332,6 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
         yAxis.setAxisLineColor(Color.BLACK);
         //yAxis.setLabelCount(0);
         yAxis.setAxisLineWidth(3f);
-        //yAxis.setCenterAxisLabels(true);
-
-//        yAxis.setValueFormatter(new ValueFormatter() {
-//            @Override
-//            public String getFormattedValue(float value) {
-//                return "1";
-//            }
-//        });
 
         chart.setData(lineData);
         chart.setBackgroundColor(Color.LTGRAY);
@@ -392,9 +366,6 @@ public class SystemElementDetailsActivity extends AppCompatActivity {
     }
 
     private void showDataInBarChart(List<TimeSeriesData> timeSeriesDataList){
-        //BarChart chart = findViewById(R.id.bar_chart);
-
-
         List<BarEntry> entries = new ArrayList<>();
 
         for (int i = 0; i < timeSeriesDataList.size(); i++) {

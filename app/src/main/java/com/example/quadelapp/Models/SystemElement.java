@@ -7,8 +7,6 @@ public class SystemElement {
     protected String description;
     protected String state;
     protected String type;
-    //private String pictureId;
-
     protected int elementImage;
 
     public String getId(){

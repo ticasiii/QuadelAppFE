@@ -25,20 +25,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //< create >
         super.onCreate(savedInstanceState);
 
-//        Intent intent = new Intent(this, RealTimeService.class);
-//        startService(intent);
         setContentView(R.layout.activity_main);
-        //</ create >
-
-        //< get elements >
         TabLayout tabLayout = findViewById(R.id.tabs);
         ViewPager2 viewPager2 = findViewById(R.id.view_pager);
-        //</ get elements >
-
-
         ViewPagerAdapter adapter = new ViewPagerAdapter(this);
         viewPager2.setAdapter(adapter);
 
@@ -55,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
                         else {
                             tab.setText("Elements");
                         }
-                        //tab.setText("Tab " + (position + 1));
                     }
                 }).attach();
 

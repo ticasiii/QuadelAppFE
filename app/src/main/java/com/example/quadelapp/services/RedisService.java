@@ -61,25 +61,9 @@ public interface RedisService {
 
     @POST("isConnectedOn/{id}")
     Call<Element> connectElementToControlPanel(@Path("id")  String id, @Body String controlPanelId, String chainNumber);
-/////////////////
-    
-
-/////////////////
-    @GET("talks/all_recommendedTalks/{userId}")
-    Call<List<Element>> getAllRecommendedTalks(@Path("userId") String userId);
-
-    @GET("/talks/{id}/speaker_talks")
-    Call<List<Element>> getSpeakerTalks(@Path("id")  String id);
-
-    @GET("/talks/{email}/speaker_talks_by_email")
-    Call<List<Element>> getSpeakerTalksByEmail(@Path("email")  String email);
 
     @PUT("element/{id}")
     Call<Element> updateNodeElement(@Path("id")  String id, @Body Element e);
-
-    @POST("talks/follow/{id}")
-    Call<Element> followTalk(@Path("id")  String id, @Body String userId);
-
     @POST("controlpanel/")
     Call<ControlPanel> createControlPanel(@Body ControlPanel cp);
 

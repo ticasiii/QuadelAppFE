@@ -88,37 +88,6 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.MyView
         holder.state.setText(picture.getState());
         holder.state.setTextColor(Color.BLACK);
         setAlarmFrame(holder, picture.getState());
-
-
-//        if(picture.getState() == "ALARM"){
-//            holder.ivState.setBackgroundColor(0xFFFF0000);
-//
-//            // adding the color to be shown
-//            ObjectAnimator animator = ObjectAnimator.ofInt(holder.ivState, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
-//
-//            // duration of one color
-//            animator.setDuration(2000);
-//            animator.setEvaluator(new ArgbEvaluator());
-//
-//            // color will be show in reverse manner
-//            animator.setRepeatCount(Animation.REVERSE);
-//
-//            // It will be repeated up to infinite time
-//            animator.setRepeatCount(Animation.INFINITE);
-//            animator.start();
-//
-//
-//        }
-//        else if(picture.getState() == "OFF"){
-//            holder.ivState.setBackgroundColor(0xFF808080);
-//        }
-//        else if(picture.getState() == "ERROR"){
-//            holder.ivState.setBackgroundColor(0xFFA020F0);
-//        }
-//        else {
-//            holder.ivState.setBackgroundColor(Color.GREEN);
-//        }
-
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

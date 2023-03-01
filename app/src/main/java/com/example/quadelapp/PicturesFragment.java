@@ -40,11 +40,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class PicturesFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private RecyclerView recyclerView;
@@ -141,12 +138,5 @@ public class PicturesFragment extends Fragment {
                 Toast.makeText(getContext(), "Something went wrong with retrieving PICTURES FROM DB from DB!", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void refreshAdapter(){
-        if(pictures!=null){
-            adapter.pictures = pictures;
-            adapter.notifyDataSetChanged();
-        }
     }
 }

@@ -9,7 +9,6 @@ public class Picture {
 
     private String ID;
     private String title;
-    //private String picture;
     private int image;
     private String description;
     private List<Element> detectorsList;

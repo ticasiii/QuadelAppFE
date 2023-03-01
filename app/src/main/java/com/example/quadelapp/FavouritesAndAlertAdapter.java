@@ -123,22 +123,6 @@ public class FavouritesAndAlertAdapter extends RecyclerView.Adapter<FavouritesAn
             animator.start();
         }
     }
-//    public int setColorByState(String state){
-//        int colorState;
-//
-//        switch (state){
-//            case "ALARM":
-//                colorState = Color.RED;
-//            case "FAULT":
-//                colorState = Color.YELLOW;
-//            case "OFF":
-//                colorState = Color.GRAY;
-//            case "OK":
-//                colorState = Color.GREEN;
-//            default:colorState = Color.GREEN;
-//        }
-//        return colorState;
-//    }
 
     public void setStateIcon(ImageView iv, String state){
         if(Objects.equals(state, "ALARM")) {

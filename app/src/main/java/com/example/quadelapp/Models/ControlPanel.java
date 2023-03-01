@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ControlPanel extends SystemElement {
 
@@ -116,24 +117,24 @@ public class ControlPanel extends SystemElement {
     public void changeChainState(){
         for (Element element:elements) {
             String detectorState = element.getState();
-            if(detectorState == "alarm")
+            if(Objects.equals(detectorState, "ALARM"))
                 chainsStates.replace(element.getChainNumber(), detectorState);
-            else if (detectorState == "error" )
-                this.state = "error";
-            else if (detectorState == "normal")
-                this.state = "normal";
+            else if (Objects.equals(detectorState, "FAULT"))
+                this.state = "FAULT";
+            else if (Objects.equals(detectorState, "OK"))
+                this.state = "OK";
         }
     }
 
     public void changeState() {
         for (Element detector:elements) {
             String detectorState = detector.getState();
-            if(detectorState == "error")
-                this.state = "error";
-            else if (detectorState == "alarm" )
-                this.state = "alarm";
-            else if (detectorState == "normal")
-                this.state = "normal";
+            if(Objects.equals(detectorState, "FAULT"))
+                this.state = "FAULT";
+            else if (detectorState == "ALARM" )
+                this.state = "ALARM";
+            else if (detectorState == "OK")
+                this.state = "OK";
         }
     }
 

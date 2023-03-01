@@ -181,10 +181,4 @@ public class FavouritesAndAlertFragment extends Fragment{
             pic.setState("OK");
         }
     }
-    public void refreshAdapter(){
-        if(fullListPictures!=null){
-            adapter.pictures = fullListPictures;
-            adapter.notifyDataSetChanged();
-        }
-    }
 }
